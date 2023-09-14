@@ -7,7 +7,7 @@ let rec consume_word word input pos =
   if pos < String.length input then
     let char = input.[pos] in
     match char with
-    | 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' ->
+    | 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' ->
         consume_word (word ^ String.make 1 char) input (pos + 1)
     | _ -> (pos, word)
   else (pos, word)

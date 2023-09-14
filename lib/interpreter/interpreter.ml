@@ -1,6 +1,6 @@
 open Heavnot
-module Scope = Scope
 module Value = Value
+module Scope = Scope
 
 let undefined_variable id = raise (Failure ("Undefined variable " ^ id))
 
@@ -75,23 +75,16 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
       in
 
       Hashtbl.find obj acc.identifier
-  | FunctionCall call ->
+  | FunctionCall call -> (
       let value = exec_node scope call.value in
-      let funct =
-        match value with
-        | Function funct -> funct
-        | value -> invalid_value value
-      in
-
       let values = List.map (exec_node scope) call.params in
 
-      exec_function scope funct values
+      match value with
+      | Function funct -> exec_function scope funct values
+      | ExternalFunction funct -> funct values
+      | value -> invalid_value value)
 
-let execute (root : Ast.root) =
-  let scope = Scope.create None in
-
-  ignore (exec_body scope root.body);
-  scope
+let execute_root scope (root : Ast.root) = ignore (exec_body scope root.body)
 
 let execute_function scope id =
   let value = Scope.get scope id in

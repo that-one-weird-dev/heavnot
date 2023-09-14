@@ -17,9 +17,24 @@ let () =
   let tokens = Lexer.tokenize lines in
   let root = Parser.parse tokens in
 
-  Tcheck.check root;
+  let scope = Tcheck.Scope.create None in
+  Tcheck.Scope.set scope "print"
+    (Type.Function { params = [ Type.String ]; return = Type.Unit });
 
-  let scope = Interpreter.execute root in
+  Tcheck.check_root scope root;
+
+  let scope = Interpreter.Scope.create None in
+
+  let print =
+    Interpreter.Value.external_function (fun params ->
+        (match params with
+        | param :: _ -> print_endline (Interpreter.Value.show param)
+        | [] -> ());
+        Interpreter.Value.unit ())
+  in
+  Interpreter.Scope.set scope "print" print;
+
+  Interpreter.execute_root scope root;
   let result = Interpreter.execute_function scope "main" in
 
   print_endline (Interpreter.Value.show result)

@@ -1,4 +1,5 @@
 open Heavnot
+module Scope = Scope
 
 let undefined_variable id = raise (Failure ("Undefined variable " ^ id))
 
@@ -106,7 +107,5 @@ and check_body scope (body : Ast.t list) : Type.t =
       check_body scope body
   | [] -> Type.Unit
 
-let check (root : Ast.root) =
-  let scope = Scope.create None in
-
+let check_root scope (root : Ast.root) =
   List.iter (fun n -> ignore (check_node scope n)) root.body

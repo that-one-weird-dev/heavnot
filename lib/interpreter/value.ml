@@ -1,6 +1,7 @@
 open Heavnot
 
-type funct = { params : Ast.param list; return : Type.t; body : Ast.t list } [@@deriving show]
+type funct = { params : Ast.param list; return : Type.t; body : Ast.t list }
+[@@deriving show]
 
 type t =
   | Unit
@@ -9,6 +10,13 @@ type t =
   | FloatValue of float
   | StringValue of string
   | Object of (string, t) Hashtbl.t
+  | ExternalFunction of (t list -> t)
+
+let unit () = Unit
+let int value = IntValue value
+let float value = FloatValue value
+let string value = StringValue value
+let external_function func = ExternalFunction func
 
 let rec show_object str (fields : (string * t) list) =
   let conc_str id value = str ^ id ^ ": " ^ show value in
@@ -19,7 +27,9 @@ let rec show_object str (fields : (string * t) list) =
   | [] -> "{}"
 
 and show_function str ret params =
-  let conc_str (param : Ast.param) = str ^ param.identifier ^ ": " ^ Type.show param.type_ in
+  let conc_str (param : Ast.param) =
+    str ^ param.identifier ^ ": " ^ Type.show param.type_
+  in
 
   match params with
   | param :: [] -> "(" ^ conc_str param ^ "): " ^ Type.show ret
@@ -33,5 +43,6 @@ and show = function
   | FloatValue value -> string_of_float value
   | StringValue value -> value
   | Object fields -> show_object "" (List.of_seq (Hashtbl.to_seq fields))
+  | ExternalFunction _ -> "EXTERNAL_FUNCTION"
 
 let pp ppf value = Format.fprintf ppf "%s" (show value)
