@@ -72,6 +72,7 @@ let tokenize_statement input pos =
   | '=' -> (pos + 1, Some Equal)
   | ',' -> (pos + 1, Some Comma)
   | ':' -> (pos + 1, Some Colon)
+  | '.' -> (pos + 1, Some Dot)
   | _ -> invalid_character pos
 
 let rec tokenize tokens pos input =

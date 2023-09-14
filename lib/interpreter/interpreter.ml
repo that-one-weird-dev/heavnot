@@ -13,6 +13,9 @@ let invalid_value found =
 let invalid_arg_count_on_function_call () =
   raise (Failure "Invalid arg count on function call")
 
+let cannot_access_non_object value =
+  Failure ("Cannot index into non object value of type " ^ Value.show value)
+
 let rec exec_function (scope : Scope.t) (funct : Value.funct)
     (param_values : Value.t list) : Value.t =
   let scope = Scope.create (Some scope) in
@@ -39,7 +42,7 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
   match node with
   | Function funct ->
       let value_funct : Value.funct =
-    { params = funct.params; return = funct.return_type; body = funct.body }
+        { params = funct.params; return = funct.return_type; body = funct.body }
       in
       Value.Function value_funct
   | VariableDecl var ->
@@ -67,6 +70,15 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
         match value with Some value -> value | None -> undefined_variable id
       in
       value
+  | ObjectAccess acc ->
+      let value = exec_node scope acc.value in
+      let obj =
+        match value with
+        | Object obj -> obj
+        | value -> raise (cannot_access_non_object value)
+      in
+
+      Hashtbl.find obj acc.identifier
   | FunctionCall call ->
       let value = exec_node scope call.value in
       let funct =

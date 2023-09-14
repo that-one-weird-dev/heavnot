@@ -8,54 +8,66 @@ let get_type scope id =
   | Some type_ -> type_
   | None -> undefined_type id
 
-[@@@warning "-27"]
-
-let rec object_equal scope (a : (string * Type.t) list)
-    (b : (string * Type.t) list) =
-  if List.length a != List.length b then false
+let rec can_object_cast scope (from : (string * Type.t) list)
+    (into : (string * Type.t) list) =
+  if List.length from < List.length into then false
   else
     let delta =
       List.find_opt
-        (fun ( ((a_id : string), (a_type : Type.t)),
-               ((b_id : string), (b_type : Type.t)) ) ->
-          (not (String.equal a_id b_id)) || not_equal_bool scope a_type b_type)
-        (List.combine a b)
+        (fun (into_id, into_type) ->
+          match
+            List.find_opt
+              (fun (from_id, from_type) ->
+                String.equal from_id into_id
+                && can_cast scope from_type into_type)
+              from
+          with
+          | Some _ -> false
+          | None -> true)
+        into
     in
     match delta with Some _ -> false | None -> true
 
-and function_equal scope a_params a_ret b_params b_ret =
+(* functions can cast only if equal*)
+and can_function_cast scope a_params a_ret b_params b_ret =
   if List.length a_params != List.length b_params then false
   else
     let params_delta =
       List.find_opt
-        (fun (a, b) -> equal_bool scope a b)
+        (fun (a, b) -> can_cast scope a b)
         (List.combine a_params b_params)
     in
     let params_match =
       match params_delta with Some _ -> false | None -> true
     in
-    let return_match = equal_bool scope a_ret b_ret in
+    let return_match = can_cast scope a_ret b_ret in
 
     params_match && return_match
 
-and equal (scope : Scope.t) (a : Type.t) (b : Type.t) :
+and cast (scope : Scope.t) (from : Type.t) (into : Type.t) :
     (Type.t, Type.t * Type.t) result =
-  match (a, b) with
-  | Unit, Unit | Int, Int | Float, Float | String, String | Never, Never -> Ok a
-  | Object obj_a, Object obj_b ->
-      if object_equal scope obj_a obj_b then Ok a else Error (a, b)
-  | Function func_a, Function func_b ->
-      if function_equal scope func_a.params func_a.return func_b.params func_b.return then Ok a else Error (a, b)
-  | Reference a, Reference b ->
-      equal scope (get_type scope a) (get_type scope b)
-  | Reference a, b -> equal scope (get_type scope a) b
-  | a, Reference b -> equal scope a (get_type scope b)
-  | a, b -> Error (a, b)
+  match (from, into) with
+  | Unit, Unit | Int, Int | Float, Float | String, String | Never, Never ->
+      Ok into
+  | Object obj_from, Object obj_into ->
+      if can_object_cast scope obj_from obj_into then Ok into
+      else Error (from, into)
+  | Function func_from, Function func_into ->
+      if
+        can_function_cast scope func_from.params func_from.return
+          func_into.params func_into.return
+      then Ok into
+      else Error (from, into)
+  | Reference from, Reference into ->
+      cast scope (get_type scope from) (get_type scope into)
+  | Reference from, into -> cast scope (get_type scope from) into
+  | from, Reference into -> cast scope from (get_type scope into)
+  | from, into -> Error (from, into)
 
-and equal_bool scope a b =
-  match equal scope a b with Ok _ -> true | Error _ -> false
+and can_cast scope a b =
+  match cast scope a b with Ok _ -> true | Error _ -> false
 
-and not_equal_bool scope a b = not (equal_bool scope a b)
+and not_can_cast scope a b = not (can_cast scope a b)
 
-and list_diff_opt (scope : Scope.t) (a : Type.t list) (b : Type.t list) =
-  List.find_opt (fun (a, b) -> not_equal_bool scope a b) (List.combine a b)
+and list_diff_opt (scope : Scope.t) (from : Type.t list) (into : Type.t list) =
+  List.find_opt (fun (f, i) -> not_can_cast scope f i) (List.combine from into)

@@ -6,9 +6,13 @@ let cannot_invoke_non_function_type () =
   raise (Failure "Cannot invoke non function type")
 
 let incompatible_type a b =
-  raise
-    (Failure
-       ("Incompatible type " ^ Type.show a ^ " with " ^ Type.show b))
+  raise (Failure ("Incompatible type " ^ Type.show a ^ " with " ^ Type.show b))
+
+let cannot_access_non_object type_ =
+  Failure ("Cannot index into non object value of type " ^ Type.show type_)
+
+let undefined_index_in_object id =
+  Failure ("Undefined index " ^ id ^ " in object")
 
 let rec check_node scope (node : Ast.t) : Type.t =
   let open Type in
@@ -21,7 +25,7 @@ let rec check_node scope (node : Ast.t) : Type.t =
       match (value_type, var.type_) with
       | value_type, None -> value_type
       | value_type, Some type_ -> (
-          match Tcomp.equal scope value_type type_ with
+          match Tcomp.cast scope value_type type_ with
           | Ok t -> t
           | Error (a, b) -> raise (incompatible_type a b)))
   | TypeDecl decl ->
@@ -37,7 +41,7 @@ let rec check_node scope (node : Ast.t) : Type.t =
 
       let type_ = check_body funct_scope funct.body in
 
-      match Tcomp.equal scope type_ funct.return_type with
+      match Tcomp.cast scope type_ funct.return_type with
       | Ok t -> Function { params; return = t }
       | Error (a, b) -> raise (incompatible_type a b))
   | Literal (IntLiteral _) -> Type.Int
@@ -51,6 +55,18 @@ let rec check_node scope (node : Ast.t) : Type.t =
         match type_ with Some type_ -> type_ | None -> undefined_variable id
       in
       type_
+  | ObjectAccess acc -> (
+      let type_ = check_node scope acc.value in
+      let obj =
+        match type_ with
+        | Object obj -> obj
+        | type_ -> raise (cannot_access_non_object type_)
+      in
+
+      let field_obj = List.find_opt (fun (id, _) -> String.equal id acc.identifier) obj in
+      match field_obj with
+      | Some (_, type_) -> type_
+      | None -> raise (undefined_index_in_object acc.identifier))
   | FunctionCall call -> (
       let funct = check_node scope call.value in
       match funct with

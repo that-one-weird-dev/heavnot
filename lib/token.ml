@@ -10,6 +10,7 @@ type t =
   | Equal
   | Comma
   | Colon
+  | Dot
   (* keywords *)
   | Int
   | Float

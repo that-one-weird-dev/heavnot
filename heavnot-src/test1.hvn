@@ -1,11 +1,10 @@
 
 Pos :: { x: float, y: float }
+Trans :: { pos: Pos }
 
-idk = (): int {
-    10
-}
+main = (): Pos {
+    trans: Trans = { pos: { x: 10., y: 10. } }
 
-main = (): (): int {
-    idk
+    trans.pos
 }
 

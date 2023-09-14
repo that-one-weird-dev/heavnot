@@ -7,6 +7,7 @@ type t =
   | Literal of Literal.t
   | ObjectLiteral of (string * t) list
   | VariableAccess of string
+  | ObjectAccess of { value : t; identifier : string }
   | FunctionCall of { value : t; params : t list }
 [@@deriving show]
 
@@ -38,6 +39,9 @@ let rec print_node ind ast =
   | Literal value -> print_indented ("Literal(" ^ Literal.show value ^ ")") ind
   | ObjectLiteral _ -> print_indented "ObjectLiteral" ind
   | VariableAccess id -> print_indented ("VariableAccess(" ^ id ^ ")") ind
+  | ObjectAccess acc ->
+        print_indented ("ObjectAccess(" ^ acc.identifier ^ "):") ind;
+        print_node (ind + 1) acc.value
   | FunctionCall call ->
       print_indented "FunctionCall:" ind;
       print_node (ind + 1) call.value

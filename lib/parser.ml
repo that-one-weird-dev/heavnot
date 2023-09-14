@@ -64,6 +64,8 @@ and parse_suffix (tokens : Token.t list) statement =
       let tokens, statements = parse_parameter_statements [] tokens in
 
       (tokens, FunctionCall { value = statement; params = statements })
+  | Dot :: Identifier identifier :: tokens ->
+      (tokens, ObjectAccess { value = statement; identifier })
   | tokens -> (tokens, statement)
 
 and parse_statement (tokens : Token.t list) =
