@@ -94,7 +94,7 @@ let rec check_node scope (node : Ast.t) : Type.t =
             List.map (fun (n : Ast.t) -> check_node scope n) call.params
           in
 
-          match Tcomp.list_diff_opt scope funct.params param_types with
+          match Tcomp.list_diff_opt scope param_types funct.params with
           | Some (a, b) -> incompatible_type a b
           | None -> funct.return)
       | _ -> cannot_invoke_non_function_type ())

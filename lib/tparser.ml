@@ -1,6 +1,7 @@
 let rec parse_type (tokens : Token.t list) =
   let open Type in
   match tokens with
+  | Any :: tokens -> (tokens, Any)
   | Unit :: tokens -> (tokens, Unit)
   | Int :: tokens -> (tokens, Int)
   | Float :: tokens -> (tokens, Float)

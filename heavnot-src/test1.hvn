@@ -2,12 +2,12 @@
 Pos :: { x: float, y: float }
 Trans :: { pos: Pos }
 
-main := fn(): float {
-
-    print("test");
-
+main := fn() {
     trans : Trans = { pos: { x: 10., y: 10., z: 10. } };
 
-    trans.pos.x
+    print("test");
+    print(trans);
+
+    ()
 }
 

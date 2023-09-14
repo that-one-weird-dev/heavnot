@@ -58,6 +58,7 @@ and cast (scope : Scope.t) (from : Type.t) (into : Type.t) :
           func_into.params func_into.return
       then Ok into
       else Error (from, into)
+  | _, Any -> Ok Any
   | Reference from, Reference into ->
       cast scope (get_type scope from) (get_type scope into)
   | Reference from, into -> cast scope (get_type scope from) into

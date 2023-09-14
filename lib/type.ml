@@ -1,6 +1,7 @@
 type t =
-  | Unit
   | Never
+  | Any
+  | Unit
   | Int
   | Float
   | String
@@ -25,13 +26,14 @@ and show_function str ret params =
   | [] -> "(): " ^ show ret
 
 and show = function
+  | Never -> "never"
+  | Any -> "any"
   | Unit -> "()"
   | Int -> "int"
   | Float -> "float"
   | String -> "string"
   | Object fields -> show_object "" fields
   | Function funct -> show_function "" funct.return funct.params
-  | Never -> "never"
   | Reference id -> id
 
 let pp ppf value = Format.fprintf ppf "%s" (show value)

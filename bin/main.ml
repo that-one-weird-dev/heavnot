@@ -19,7 +19,7 @@ let () =
 
   let scope = Tcheck.Scope.create None in
   Tcheck.Scope.set scope "print"
-    (Type.Function { params = [ Type.String ]; return = Type.Unit });
+    (Type.Function { params = [ Type.Any ]; return = Type.Unit });
 
   Tcheck.check_root scope root;
 
