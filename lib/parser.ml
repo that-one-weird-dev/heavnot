@@ -31,6 +31,7 @@ and parse_parameter_statements statements (tokens : Token.t list) =
 and parse_body body (tokens : Token.t list) =
   match tokens with
   | BraceClose :: tokens -> (tokens, List.rev body)
+  | Semicolon :: tokens -> parse_body body tokens
   | _ :: _ ->
       let tokens, statement = parse_statement tokens in
       parse_body (statement :: body) tokens
@@ -67,6 +68,7 @@ and parse_suffix (tokens : Token.t list) statement =
         (FunctionCall { value = statement; params = statements })
   | Dot :: Identifier identifier :: tokens ->
       parse_suffix tokens (ObjectAccess { value = statement; identifier })
+  | Semicolon :: _ -> (tokens, statement)
   | tokens -> (tokens, statement)
 
 and parse_statement (tokens : Token.t list) =
@@ -74,7 +76,13 @@ and parse_statement (tokens : Token.t list) =
     match tokens with
     | Identifier id :: tokens -> parse_identifier tokens id
     | Literal value :: tokens -> (tokens, Literal value)
-    | ParenOpen :: tokens -> parse_function tokens
+    | Fn :: ParenOpen :: tokens -> parse_function tokens
+    | ParenOpen :: tokens -> (
+        let tokens, statement = parse_statement tokens in
+        match tokens with
+        | ParenClose :: tokens -> (tokens, statement)
+        | token :: _ -> raise (unexpected_token Token.ParenClose token)
+        | [] -> raise unexpected_eof)
     | BraceOpen :: tokens -> parse_object [] tokens
     | token :: _ -> raise (invalid_token token)
     | [] -> raise unexpected_eof
