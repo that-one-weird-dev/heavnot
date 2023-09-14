@@ -18,6 +18,14 @@ let rec show_object str (fields : (string * t) list) =
   | (id, value) :: fields -> show_object (conc_str id value ^ ", ") fields
   | [] -> "{}"
 
+and show_function str ret params =
+  let conc_str (param : Ast.param) = str ^ param.identifier ^ ": " ^ Type.show param.type_ in
+
+  match params with
+  | param :: [] -> "(" ^ conc_str param ^ "): " ^ Type.show ret
+  | param :: params -> show_function (conc_str param ^ ", ") ret params
+  | [] -> "(): " ^ Type.show ret
+
 and show = function
   | Unit -> "()"
   | Function _ -> "function()"

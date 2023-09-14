@@ -106,7 +106,7 @@ and parse_object values (tokens : Token.t list) =
 
       match tokens with
       | Comma :: tokens -> parse_object (value :: values) tokens
-      | BraceClose :: tokens -> (tokens, ObjectLiteral values)
+      | BraceClose :: tokens -> (tokens, ObjectLiteral (value :: values))
       | token :: _ -> raise (unexpected_token Token.BraceClose token)
       | [] -> raise unexpected_eof)
   | BraceClose :: tokens -> (tokens, ObjectLiteral values)

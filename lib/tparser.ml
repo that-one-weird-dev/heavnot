@@ -9,14 +9,17 @@ let rec parse_type (tokens : Token.t list) =
   | token :: _ -> raise (Error.invalid_token token)
   | [] -> raise Error.unexpected_eof
 
-and parse_object_type (fields : (string * Type.t) list) (tokens : Token.t list) =
+and parse_object_type (fields : (string * Type.t) list) (tokens : Token.t list)
+    =
   match tokens with
   | BraceClose :: tokens -> (tokens, Type.Object fields)
   | Identifier id :: Colon :: tokens -> (
       let tokens, type_ = parse_type tokens in
+      let field = (id, type_) in
+
       match tokens with
-      | Comma :: tokens -> parse_object_type ((id, type_) :: fields) tokens
-      | BraceClose :: tokens -> (tokens, Type.Object fields)
+      | Comma :: tokens -> parse_object_type (field :: fields) tokens
+      | BraceClose :: tokens -> (tokens, Type.Object (field :: fields))
       | token :: _ -> raise (Error.invalid_token token)
       | [] -> raise Error.unexpected_eof)
   | token :: _ -> raise (Error.invalid_token token)

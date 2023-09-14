@@ -12,14 +12,16 @@ let get_type scope id =
 
 let rec object_equal scope (a : (string * Type.t) list)
     (b : (string * Type.t) list) =
-  let delta =
-    List.find_opt
-      (fun ( ((a_id : string), (a_type : Type.t)),
-             ((b_id : string), (b_type : Type.t)) ) ->
-        (not (String.equal a_id b_id)) || not_equal_bool scope a_type b_type)
-      (List.combine a b)
-  in
-  match delta with Some _ -> false | None -> true
+  if List.length a != List.length b then false
+  else
+    let delta =
+      List.find_opt
+        (fun ( ((a_id : string), (a_type : Type.t)),
+               ((b_id : string), (b_type : Type.t)) ) ->
+          (not (String.equal a_id b_id)) || not_equal_bool scope a_type b_type)
+        (List.combine a b)
+    in
+    match delta with Some _ -> false | None -> true
 
 and equal (scope : Scope.t) (a : Type.t) (b : Type.t) :
     (Type.t, Type.t * Type.t) result =

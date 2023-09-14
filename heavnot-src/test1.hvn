@@ -2,9 +2,6 @@
 Pos :: { x: float, y: float }
 
 
-main = (): Pos {
-    pos: Pos = { x: 10., y: 20. }
-
-    pos
+main = () {
 }
 
