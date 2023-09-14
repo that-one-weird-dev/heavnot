@@ -19,6 +19,10 @@ let rec check_node scope (node : Ast.t) : Type.t =
           if value_type != type_ then incompatible_type ()
           else value_type)
 
+  | TypeDecl decl ->
+        Scope.set_type scope decl.identifier decl.type_;
+        Unit
+
   | Function funct ->
       let params = List.map (fun (p : Ast.param) -> p.type_) funct.params in
 

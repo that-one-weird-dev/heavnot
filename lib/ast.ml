@@ -47,7 +47,7 @@ let rec print_node ind ast =
       print_indented ("Variable(" ^ var.identifier ^ "):") ind;
       print_node (ind + 1) var.value
   | TypeDecl decl ->
-      print_indented ("Type(" ^ decl.identifier ^ ")" ind
+      print_indented ("Type(" ^ decl.identifier ^ ")") ind
   | Literal value ->
       print_indented ("Literal(" ^ (Literal.show value) ^ ")") ind
   | VariableAccess id ->
