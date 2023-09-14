@@ -1,7 +1,7 @@
 
-t :: float
+i :: int
 
-idk = (a: int): int {
+idk = (a: i): int {
   a
 }
 

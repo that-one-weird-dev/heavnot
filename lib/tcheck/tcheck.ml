@@ -5,7 +5,10 @@ let undefined_variable id = raise (Failure ("Undefined variable " ^ id))
 let cannot_invoke_non_function_type () =
   raise (Failure "Cannot invoke non function type")
 
-let incompatible_type () = raise (Failure "Incompatible type")
+let incompatible_type a b =
+  raise
+    (Failure
+       ("Incompatible type " ^ Type.to_string a ^ " with " ^ Type.to_string b))
 
 let rec check_node scope (node : Ast.t) : Type.t =
   let open Type in
@@ -18,7 +21,8 @@ let rec check_node scope (node : Ast.t) : Type.t =
       match (value_type, var.type_) with
       | value_type, None -> value_type
       | value_type, Some type_ ->
-          if value_type != type_ then incompatible_type () else value_type)
+          if Tcomp.equal scope value_type type_ then value_type
+          else incompatible_type value_type type_)
   | TypeDecl decl ->
       Scope.set_type scope decl.identifier decl.type_;
       Unit
@@ -32,9 +36,9 @@ let rec check_node scope (node : Ast.t) : Type.t =
 
       let type_ = check_body funct_scope funct.body in
 
-      if type_ == funct.return_type then
+      if Tcomp.equal scope type_ funct.return_type then
         Function { params; return = funct.return_type }
-      else incompatible_type ()
+      else incompatible_type type_ funct.return_type
   | Literal (IntLiteral _) -> Type.Int
   | Literal (FloatLiteral _) -> Type.Float
   | Literal (StringLiteral _) -> Type.String
@@ -47,13 +51,14 @@ let rec check_node scope (node : Ast.t) : Type.t =
   | FunctionCall call -> (
       let funct = check_node scope call.value in
       match funct with
-      | Function funct ->
+      | Function funct -> (
           let param_types =
             List.map (fun (n : Ast.t) -> check_node scope n) call.params
           in
 
-          if Type.list_equals funct.params param_types then funct.return
-          else incompatible_type ()
+          match Tcomp.list_diff_opt scope funct.params param_types with
+          | Some (a, b) -> incompatible_type a b
+          | None -> funct.return)
       | _ -> cannot_invoke_non_function_type ())
 
 and check_body scope (body : Ast.t list) : Type.t =

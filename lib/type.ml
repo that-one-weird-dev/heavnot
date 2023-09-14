@@ -1,11 +1,15 @@
+
+type 'a obj = (string, 'a) Hashtbl.t
+
 type t =
   | Unit
+  | Never
   | Int
   | Float
   | String
-  | Object of (string, t) Hashtbl.t
+  | Object of t obj
   | Function of { params : t list; return : t }
-  | Never
+  | Reference of string
 
 let to_string = function
   | Unit -> "()"
@@ -15,9 +19,6 @@ let to_string = function
   | Object _ -> "{object}"
   | Function _ -> "function()"
   | Never -> "never"
+  | Reference id -> id
 
 let pp ppf value = Format.fprintf ppf "%s" (to_string value)
-
-let list_equals (a : t list) (b : t list) =
-  let different = List.find_opt (fun (a, b) -> a != b) (List.combine a b) in
-  match different with Some _ -> false | None -> true

@@ -49,6 +49,7 @@ and parse_type (tokens : Token.t list) =
   | Int :: tokens -> (tokens, Int)
   | Float :: tokens -> (tokens, Float)
   | String :: tokens -> (tokens, String)
+  | Identifier id :: tokens -> (tokens, Reference id)
   | token :: _ -> invalid_token token
   | [] -> unexpected_eof ()
 
