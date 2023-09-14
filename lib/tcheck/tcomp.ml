@@ -50,7 +50,12 @@ and cast (scope : Scope.t) (from : Type.t) (into : Type.t) :
   let into = Tutils.dereference_type scope into in
 
   match (from, into) with
-  | Unit, Unit | Int, Int | Float, Float | String, String | Never, Never ->
+  | Unit, Unit
+  | Int, Int
+  | Float, Float
+  | String, String
+  | Never, Never
+  | Any, Any ->
       Ok into
   | Object obj_from, Object obj_into ->
       if can_object_cast scope obj_from obj_into then Ok into
@@ -72,8 +77,7 @@ and not_can_cast scope a b = not (can_cast scope a b)
 and list_diff_opt (scope : Scope.t) (from : Type.t list) (into : Type.t list) =
   List.find_opt (fun (f, i) -> not_can_cast scope f i) (List.combine from into)
 
-
 let smaller_cast (scope : Scope.t) (from : Type.t) (into : Type.t) =
-    match cast scope from into with
-    | Ok type_ -> Ok type_
-    | Error (from, into) -> cast scope into from
+  match cast scope from into with
+  | Ok type_ -> Ok type_
+  | Error (from, into) -> cast scope into from
