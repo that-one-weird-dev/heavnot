@@ -38,6 +38,7 @@ let rec check_node scope (node : Ast.t) : Type.t =
   | IntLiteral _ -> Type.Int
   | FloatLiteral _ -> Type.Float
   | StringLiteral _ -> Type.String
+    | BoolLiteral _ -> Type.Bool
   | ObjectLiteral value ->
       Object (List.map (fun (id, value) -> (id, check_node scope value)) value)
   | VariableAccess id ->

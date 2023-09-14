@@ -99,6 +99,7 @@ and parse_statement (tokens : Token.t list) =
     | IntLiteral value :: tokens -> (tokens, IntLiteral value)
     | FloatLiteral value :: tokens -> (tokens, FloatLiteral value)
     | StringLiteral value :: tokens -> (tokens, StringLiteral value)
+    | BoolLiteral value :: tokens -> (tokens, BoolLiteral value)
     | Fn :: ParenOpen :: tokens -> parse_function tokens
     | ParenOpen :: tokens -> (
         let tokens, statement = parse_statement tokens in

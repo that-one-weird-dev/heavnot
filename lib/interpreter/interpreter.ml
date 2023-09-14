@@ -56,6 +56,7 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
   | IntLiteral value -> IntValue value
   | FloatLiteral value -> FloatValue value
   | StringLiteral value -> StringValue value
+        | BoolLiteral value -> BoolValue value
   | ObjectLiteral value ->
       let obj = Hashtbl.create 784593 in
       List.iter (fun (id, t) -> Hashtbl.add obj id (exec_node scope t)) value;

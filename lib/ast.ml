@@ -8,6 +8,7 @@ type t =
   | IntLiteral of int
   | FloatLiteral of float
   | StringLiteral of string
+  | BoolLiteral of bool
   | ObjectLiteral of (string * t) list
   | VariableAccess of string
   | ObjectAccess of { value : t; identifier : string }
@@ -45,7 +46,9 @@ let rec print_node ind ast =
       print_indented ("IntLiteral(" ^ string_of_int value ^ ")") ind
   | FloatLiteral value ->
       print_indented ("Literal(" ^ string_of_float value ^ ")") ind
-  | StringLiteral value -> print_indented ("Literal(" ^ value ^ ")") ind
+  | StringLiteral value -> print_indented ("StringLiteral(" ^ value ^ ")") ind
+  | BoolLiteral value ->
+      print_indented ("BoolLiteral(" ^ string_of_bool value ^ ")") ind
   | ObjectLiteral _ -> print_indented "ObjectLiteral" ind
   | VariableAccess id -> print_indented ("VariableAccess(" ^ id ^ ")") ind
   | ObjectAccess acc ->

@@ -1,11 +1,11 @@
 
-Pos :: { x: float, y: float }
+Pos :: { x: int, y: int }
 Trans :: { pos: Pos }
 
 main := fn() {
-    trans : Trans = { pos: { x: 0., y: 10., z: 10. } };
-
-    result := if trans.pos.x { "true" } else { "false" }
+    result : Trans = {
+        pos: if false { { x: 20, y: 30 }} else { { x: 100, y: 483 } },
+    };
 
     print(result)
 }

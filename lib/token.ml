@@ -3,6 +3,7 @@ type t =
   | IntLiteral of int
   | FloatLiteral of float
   | StringLiteral of string
+  | BoolLiteral of bool
   | ParenOpen
   | ParenClose
   | BracketOpen
@@ -20,6 +21,7 @@ type t =
   | Int
   | Float
   | String
+  | Bool
   | Fn
   | If
   | Else
@@ -31,6 +33,9 @@ let from_identifier = function
   | "int" -> Int
   | "float" -> Float
   | "string" -> String
+  | "bool" -> Bool
+  | "true" -> BoolLiteral true
+  | "false" -> BoolLiteral false
   | "fn" -> Fn
   | "if" -> If
   | "else" -> Else

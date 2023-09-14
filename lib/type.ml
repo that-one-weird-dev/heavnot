@@ -5,6 +5,7 @@ type t =
   | Int
   | Float
   | String
+  | Bool
   | Object of (string * t) list
   | Function of { params : t list; return : t }
   | Reference of string
@@ -32,6 +33,7 @@ and show = function
   | Int -> "int"
   | Float -> "float"
   | String -> "string"
+  | Bool -> "bool"
   | Object fields -> show_object "" fields
   | Function funct -> show_function "" funct.return funct.params
   | Reference id -> id

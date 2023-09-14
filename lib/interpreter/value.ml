@@ -9,6 +9,7 @@ type t =
   | IntValue of int
   | FloatValue of float
   | StringValue of string
+  | BoolValue of bool
   | Object of (string, t) Hashtbl.t
   | ExternalFunction of (t list -> t)
 
@@ -20,6 +21,7 @@ let external_function func = ExternalFunction func
 
 let is_truty value =
   match value with
+  | BoolValue value -> value
   | IntValue value -> value != 0
   | FloatValue value -> value < -0.0001 || value > 0.0001
   | StringValue value -> String.length value != 0
@@ -49,6 +51,7 @@ and show = function
   | IntValue value -> string_of_int value
   | FloatValue value -> string_of_float value
   | StringValue value -> value
+  | BoolValue value -> string_of_bool value
   | Object fields -> show_object "" (List.of_seq (Hashtbl.to_seq fields))
   | ExternalFunction _ -> "EXTERNAL_FUNCTION"
 

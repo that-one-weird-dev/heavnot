@@ -6,6 +6,7 @@ let rec parse_type (tokens : Token.t list) =
   | Int :: tokens -> (tokens, Int)
   | Float :: tokens -> (tokens, Float)
   | String :: tokens -> (tokens, String)
+  | Bool :: tokens -> (tokens, Bool)
   | Identifier id :: tokens -> (tokens, Reference id)
   | BraceOpen :: tokens -> parse_object_type [] tokens
   | ParenOpen :: tokens -> parse_function_type [] tokens
