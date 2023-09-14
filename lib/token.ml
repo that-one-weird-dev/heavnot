@@ -15,6 +15,7 @@ type t =
   | Dot
   | Semicolon
   (* keywords *)
+  | Unit
   | Int
   | Float
   | String
@@ -22,6 +23,7 @@ type t =
 [@@deriving show]
 
 let from_identifier = function
+  | "unit" -> Unit
   | "int" -> Int
   | "float" -> Float
   | "string" -> String
