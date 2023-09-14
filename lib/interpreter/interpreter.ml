@@ -39,7 +39,7 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
   match node with
   | Function funct ->
       let value_funct : Value.funct =
-        { params = funct.params; body = funct.body }
+    { params = funct.params; return = funct.return_type; body = funct.body }
       in
       Value.Function value_funct
   | VariableDecl var ->

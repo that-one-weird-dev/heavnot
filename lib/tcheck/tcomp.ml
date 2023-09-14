@@ -23,12 +23,29 @@ let rec object_equal scope (a : (string * Type.t) list)
     in
     match delta with Some _ -> false | None -> true
 
+and function_equal scope a_params a_ret b_params b_ret =
+  if List.length a_params != List.length b_params then false
+  else
+    let params_delta =
+      List.find_opt
+        (fun (a, b) -> equal_bool scope a b)
+        (List.combine a_params b_params)
+    in
+    let params_match =
+      match params_delta with Some _ -> false | None -> true
+    in
+    let return_match = equal_bool scope a_ret b_ret in
+
+    params_match && return_match
+
 and equal (scope : Scope.t) (a : Type.t) (b : Type.t) :
     (Type.t, Type.t * Type.t) result =
   match (a, b) with
   | Unit, Unit | Int, Int | Float, Float | String, String | Never, Never -> Ok a
   | Object obj_a, Object obj_b ->
       if object_equal scope obj_a obj_b then Ok a else Error (a, b)
+  | Function func_a, Function func_b ->
+      if function_equal scope func_a.params func_a.return func_b.params func_b.return then Ok a else Error (a, b)
   | Reference a, Reference b ->
       equal scope (get_type scope a) (get_type scope b)
   | Reference a, b -> equal scope (get_type scope a) b

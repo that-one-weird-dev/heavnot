@@ -1,7 +1,11 @@
 
 Pos :: { x: float, y: float }
 
+idk = (): int {
+    10
+}
 
-main = () {
+main = (): (): int {
+    idk
 }
 

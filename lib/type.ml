@@ -9,12 +9,20 @@ type t =
   | Reference of string
 
 let rec show_object str (fields : (string * t) list) =
-  let conc_str id type_ = str ^ id ^ ": " ^ (show type_) in
+  let conc_str id type_ = str ^ id ^ ": " ^ show type_ in
 
   match fields with
-    | (id, type_) :: [] -> "{ " ^ conc_str id type_ ^ " }"
-  | (id, type_) :: fields -> show_object ((conc_str id type_) ^ ", ") fields
+  | (id, type_) :: [] -> "{ " ^ conc_str id type_ ^ " }"
+  | (id, type_) :: fields -> show_object (conc_str id type_ ^ ", ") fields
   | [] -> "{}"
+
+and show_function str ret params =
+  let conc_str (param : t) = str ^ show param in
+
+  match params with
+  | param :: [] -> "(" ^ conc_str param ^ "): " ^ show ret
+  | param :: params -> show_function (conc_str param ^ ", ") ret params
+  | [] -> "(): " ^ show ret
 
 and show = function
   | Unit -> "()"
@@ -22,7 +30,7 @@ and show = function
   | Float -> "float"
   | String -> "string"
   | Object fields -> show_object "" fields
-  | Function _ -> "function()"
+  | Function funct -> show_function "" funct.return funct.params
   | Never -> "never"
   | Reference id -> id
 

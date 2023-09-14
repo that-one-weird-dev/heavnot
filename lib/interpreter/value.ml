@@ -1,6 +1,6 @@
 open Heavnot
 
-type funct = { params : Ast.param list; body : Ast.t list } [@@deriving show]
+type funct = { params : Ast.param list; return : Type.t; body : Ast.t list } [@@deriving show]
 
 type t =
   | Unit
@@ -28,7 +28,7 @@ and show_function str ret params =
 
 and show = function
   | Unit -> "()"
-  | Function _ -> "function()"
+  | Function funct -> show_function "" funct.return funct.params
   | IntValue value -> string_of_int value
   | FloatValue value -> string_of_float value
   | StringValue value -> value
