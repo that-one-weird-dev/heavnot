@@ -46,6 +46,9 @@ and can_function_cast scope a_params a_ret b_params b_ret =
 
 and cast (scope : Scope.t) (from : Type.t) (into : Type.t) :
     (Type.t, Type.t * Type.t) result =
+  let from = Tutils.dereference_type scope from in
+  let into = Tutils.dereference_type scope into in
+
   match (from, into) with
   | Unit, Unit | Int, Int | Float, Float | String, String | Never, Never ->
       Ok into
@@ -59,10 +62,6 @@ and cast (scope : Scope.t) (from : Type.t) (into : Type.t) :
       then Ok into
       else Error (from, into)
   | _, Any -> Ok Any
-  | Reference from, Reference into ->
-      cast scope (get_type scope from) (get_type scope into)
-  | Reference from, into -> cast scope (get_type scope from) into
-  | from, Reference into -> cast scope from (get_type scope into)
   | from, into -> Error (from, into)
 
 and can_cast scope a b =

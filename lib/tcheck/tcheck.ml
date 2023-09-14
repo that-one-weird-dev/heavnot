@@ -1,32 +1,7 @@
+open Error
 open Heavnot
+
 module Scope = Scope
-
-let undefined_variable id = raise (Failure ("Undefined variable " ^ id))
-
-let cannot_invoke_non_function_type () =
-  raise (Failure "Cannot invoke non function type")
-
-let incompatible_type a b =
-  raise (Failure ("Incompatible type " ^ Type.show a ^ " with " ^ Type.show b))
-
-let cannot_access_non_object type_ =
-  Failure ("Cannot index into non object value of type " ^ Type.show type_)
-
-let undefined_index_in_object id =
-  Failure ("Undefined index " ^ id ^ " in object")
-
-let undefined_type id = raise (Failure ("Undefined type " ^ id))
-
-let rec dereference_type scope (type_ : Type.t) : Type.t =
-  match type_ with
-  | Reference id ->
-      let type_ =
-        match Scope.get_type scope id with
-        | Some type_ -> type_
-        | None -> raise (undefined_type id)
-      in
-      dereference_type scope type_
-  | type_ -> type_
 
 let rec check_node scope (node : Ast.t) : Type.t =
   let open Type in
@@ -75,7 +50,7 @@ let rec check_node scope (node : Ast.t) : Type.t =
   | ObjectAccess acc -> (
       let type_ = check_node scope acc.value in
       let obj =
-        match dereference_type scope type_ with
+        match Tutils.dereference_type scope type_ with
         | Object obj -> obj
         | type_ -> raise (cannot_access_non_object type_)
       in
