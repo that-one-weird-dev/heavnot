@@ -2,9 +2,9 @@
 Pos :: { x: float, y: float }
 Trans :: { pos: Pos }
 
-main = (): Pos {
-    trans: Trans = { pos: { x: 10., y: 10. } }
+main = (): float {
+    trans = { pos: { x: 10., y: 10., z: 10. } }
 
-    trans.pos
+    trans.pos.z
 }
 

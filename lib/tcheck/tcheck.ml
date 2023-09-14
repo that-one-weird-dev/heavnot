@@ -20,13 +20,15 @@ let rec check_node scope (node : Ast.t) : Type.t =
   | VariableDecl var -> (
       let value_type = check_node scope var.value in
 
-      Scope.set scope var.identifier value_type;
-
       match (value_type, var.type_) with
-      | value_type, None -> value_type
+      | value_type, None ->
+          Scope.set scope var.identifier value_type;
+          value_type
       | value_type, Some type_ -> (
           match Tcomp.cast scope value_type type_ with
-          | Ok t -> t
+          | Ok type_ ->
+              Scope.set scope var.identifier type_;
+              type_
           | Error (a, b) -> raise (incompatible_type a b)))
   | TypeDecl decl ->
       Scope.set_type scope decl.identifier decl.type_;
@@ -63,7 +65,9 @@ let rec check_node scope (node : Ast.t) : Type.t =
         | type_ -> raise (cannot_access_non_object type_)
       in
 
-      let field_obj = List.find_opt (fun (id, _) -> String.equal id acc.identifier) obj in
+      let field_obj =
+        List.find_opt (fun (id, _) -> String.equal id acc.identifier) obj
+      in
       match field_obj with
       | Some (_, type_) -> type_
       | None -> raise (undefined_index_in_object acc.identifier))
