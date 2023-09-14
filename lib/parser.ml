@@ -72,6 +72,7 @@ and parse_statement (tokens : Token.t list) =
     | Identifier id :: tokens -> parse_identifier tokens id
     | Literal value :: tokens -> (tokens, Literal value)
     | ParenOpen :: tokens -> parse_function tokens
+    | BraceOpen :: tokens -> parse_object [] tokens
     | token :: _ -> raise (invalid_token token)
     | [] -> raise unexpected_eof
   in
@@ -96,6 +97,21 @@ and parse_function (tokens : Token.t list) =
 
   let tokens, body = parse_body [] tokens in
   (tokens, Function { params; return_type; body })
+
+and parse_object values (tokens : Token.t list) =
+  match tokens with
+  | Identifier id :: Colon :: tokens -> (
+      let tokens, statement = parse_statement tokens in
+      let value = (id, statement) in
+
+      match tokens with
+      | Comma :: tokens -> parse_object (value :: values) tokens
+      | BraceClose :: tokens -> (tokens, ObjectLiteral values)
+      | token :: _ -> raise (unexpected_token Token.BraceClose token)
+      | [] -> raise unexpected_eof)
+  | BraceClose :: tokens -> (tokens, ObjectLiteral values)
+  | token :: _ -> raise (unexpected_token Token.BraceClose token)
+  | [] -> raise unexpected_eof
 
 let rec parse_root_body body (tokens : Token.t list) =
   match tokens with

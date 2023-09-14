@@ -57,6 +57,10 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
         | StringLiteral value -> StringValue value
       in
       value
+  | ObjectLiteral value ->
+      let obj = Hashtbl.create 784593 in
+      List.iter (fun (id, t) -> Hashtbl.add obj id (exec_node scope t)) value;
+      Object obj
   | VariableAccess id ->
       let value = Scope.get scope id in
       let value =

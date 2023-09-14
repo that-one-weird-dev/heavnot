@@ -5,6 +5,7 @@ type t =
   | TypeDecl of { identifier : string; type_ : Type.t }
   | Function of { params : param list; return_type : Type.t; body : t list }
   | Literal of Literal.t
+  | ObjectLiteral of (string * t) list
   | VariableAccess of string
   | FunctionCall of { value : t; params : t list }
 [@@deriving show]
@@ -35,6 +36,7 @@ let rec print_node ind ast =
       print_node (ind + 1) var.value
   | TypeDecl decl -> print_indented ("Type(" ^ decl.identifier ^ ")") ind
   | Literal value -> print_indented ("Literal(" ^ Literal.show value ^ ")") ind
+  | ObjectLiteral _ -> print_indented "ObjectLiteral" ind
   | VariableAccess id -> print_indented ("VariableAccess(" ^ id ^ ")") ind
   | FunctionCall call ->
       print_indented "FunctionCall:" ind;

@@ -1,12 +1,10 @@
 
-i :: int
-
-idk = (a: i): int {
-  a
-}
+Pos :: { x: float, y: float }
 
 
-main = (): int {
-  idk(10)
+main = (): Pos {
+    pos: Pos = { x: 10., y: 20. }
+
+    pos
 }
 

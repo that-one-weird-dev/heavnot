@@ -1,23 +1,29 @@
-type 'a obj = (string, 'a) Hashtbl.t
-
 type t =
   | Unit
   | Never
   | Int
   | Float
   | String
-  | Object of t obj
+  | Object of (string * t) list
   | Function of { params : t list; return : t }
   | Reference of string
 
-let to_string = function
+let rec show_object str (fields : (string * t) list) =
+  let conc_str id type_ = str ^ id ^ ": " ^ (show type_) in
+
+  match fields with
+    | (id, type_) :: [] -> "{ " ^ conc_str id type_ ^ " }"
+  | (id, type_) :: fields -> show_object ((conc_str id type_) ^ ", ") fields
+  | [] -> "{}"
+
+and show = function
   | Unit -> "()"
   | Int -> "int"
   | Float -> "float"
   | String -> "string"
-  | Object _ -> "{object}"
+  | Object fields -> show_object "" fields
   | Function _ -> "function()"
   | Never -> "never"
   | Reference id -> id
 
-let pp ppf value = Format.fprintf ppf "%s" (to_string value)
+let pp ppf value = Format.fprintf ppf "%s" (show value)
