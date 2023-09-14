@@ -1,4 +1,5 @@
 (library
  (name interpreter)
  (libraries heavnot ppx_deriving.show)
- (preprocess (pps ppx_deriving.show)))
+ (preprocess
+  (pps ppx_deriving.show)))

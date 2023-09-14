@@ -16,7 +16,6 @@ type t =
   | String
 [@@deriving show]
 
-
 let from_identifier = function
   | "int" -> Int
   | "float" -> Float
