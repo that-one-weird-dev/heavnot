@@ -52,14 +52,10 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
   | TypeDecl decl ->
       Scope.set_type scope decl.identifier decl.type_;
       Unit
-  | Literal value ->
-      let value : Value.t =
-        match value with
-        | IntLiteral value -> IntValue value
-        | FloatLiteral value -> FloatValue value
-        | StringLiteral value -> StringValue value
-      in
-      value
+  | UnitLiteral -> Unit
+  | IntLiteral value -> IntValue value
+  | FloatLiteral value -> FloatValue value
+  | StringLiteral value -> StringValue value
   | ObjectLiteral value ->
       let obj = Hashtbl.create 784593 in
       List.iter (fun (id, t) -> Hashtbl.add obj id (exec_node scope t)) value;

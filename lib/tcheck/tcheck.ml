@@ -46,9 +46,10 @@ let rec check_node scope (node : Ast.t) : Type.t =
       match Tcomp.cast scope type_ funct.return_type with
       | Ok t -> Function { params; return = t }
       | Error (a, b) -> raise (incompatible_type a b))
-  | Literal (IntLiteral _) -> Type.Int
-  | Literal (FloatLiteral _) -> Type.Float
-  | Literal (StringLiteral _) -> Type.String
+  | UnitLiteral -> Type.Unit
+  | IntLiteral _ -> Type.Int
+  | FloatLiteral _ -> Type.Float
+  | StringLiteral _ -> Type.String
   | ObjectLiteral value ->
       Object (List.map (fun (id, value) -> (id, check_node scope value)) value)
   | VariableAccess id ->

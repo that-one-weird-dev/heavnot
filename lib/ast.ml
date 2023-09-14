@@ -4,7 +4,10 @@ type t =
   | VariableDecl of { identifier : string; type_ : Type.t option; value : t }
   | TypeDecl of { identifier : string; type_ : Type.t }
   | Function of { params : param list; return_type : Type.t; body : t list }
-  | Literal of Literal.t
+  | UnitLiteral
+  | IntLiteral of int
+  | FloatLiteral of float
+  | StringLiteral of string
   | ObjectLiteral of (string * t) list
   | VariableAccess of string
   | ObjectAccess of { value : t; identifier : string }
@@ -36,12 +39,15 @@ let rec print_node ind ast =
       print_indented ("Variable(" ^ var.identifier ^ "):") ind;
       print_node (ind + 1) var.value
   | TypeDecl decl -> print_indented ("Type(" ^ decl.identifier ^ ")") ind
-  | Literal value -> print_indented ("Literal(" ^ Literal.show value ^ ")") ind
+  | UnitLiteral -> print_indented ("UnitLiteral") ind
+  | IntLiteral value -> print_indented ("IntLiteral(" ^ string_of_int value ^ ")") ind
+  | FloatLiteral value -> print_indented ("Literal(" ^ string_of_float value ^ ")") ind
+  | StringLiteral value -> print_indented ("Literal(" ^ value ^ ")") ind
   | ObjectLiteral _ -> print_indented "ObjectLiteral" ind
   | VariableAccess id -> print_indented ("VariableAccess(" ^ id ^ ")") ind
   | ObjectAccess acc ->
-        print_indented ("ObjectAccess(" ^ acc.identifier ^ "):") ind;
-        print_node (ind + 1) acc.value
+      print_indented ("ObjectAccess(" ^ acc.identifier ^ "):") ind;
+      print_node (ind + 1) acc.value
   | FunctionCall call ->
       print_indented "FunctionCall:" ind;
       print_node (ind + 1) call.value

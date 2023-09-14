@@ -75,7 +75,10 @@ and parse_statement (tokens : Token.t list) =
   let tokens, statement =
     match tokens with
     | Identifier id :: tokens -> parse_identifier tokens id
-    | Literal value :: tokens -> (tokens, Literal value)
+    | ParenOpen :: ParenClose :: tokens -> (tokens, UnitLiteral)
+    | IntLiteral value :: tokens -> (tokens, IntLiteral value)
+    | FloatLiteral value :: tokens -> (tokens, FloatLiteral value)
+    | StringLiteral value :: tokens -> (tokens, StringLiteral value)
     | Fn :: ParenOpen :: tokens -> parse_function tokens
     | ParenOpen :: tokens -> (
         let tokens, statement = parse_statement tokens in

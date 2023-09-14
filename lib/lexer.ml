@@ -55,13 +55,13 @@ let tokenize_statement input pos =
       let pos, number = consume_number input pos in
       let token =
         match number with
-        | IntNumber value -> Literal (IntLiteral value)
-        | FloatNumber value -> Literal (FloatLiteral value)
+        | IntNumber value -> IntLiteral value
+        | FloatNumber value -> FloatLiteral value
       in
       (pos, Some token)
   | '"' ->
       let pos, str = consume_string input (pos + 1) in
-      (pos, Some (Literal (StringLiteral str)))
+      (pos, Some (StringLiteral str))
   | ' ' | '\n' -> (pos + 1, None)
   | '(' -> (pos + 1, Some ParenOpen)
   | ')' -> (pos + 1, Some ParenClose)

@@ -1,6 +1,8 @@
 type t =
   | Identifier of string
-  | Literal of Literal.t
+  | IntLiteral of int
+  | FloatLiteral of float
+  | StringLiteral of string
   | ParenOpen
   | ParenClose
   | BracketOpen
