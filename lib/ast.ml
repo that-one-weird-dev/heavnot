@@ -7,6 +7,7 @@ type param = {
 
 type t =
   | VariableDecl of { identifier : string; type_: Type.t option; value : t; }
+  | TypeDecl of { identifier : string; type_: Type.t; }
   | Function of { params : param list; return_type : Type.t; body : t list; }
   | Literal of Literal.t
   | VariableAccess of string
@@ -45,6 +46,8 @@ let rec print_node ind ast =
   | VariableDecl var ->
       print_indented ("Variable(" ^ var.identifier ^ "):") ind;
       print_node (ind + 1) var.value
+  | TypeDecl decl ->
+      print_indented ("Type(" ^ decl.identifier ^ ")" ind
   | Literal value ->
       print_indented ("Literal(" ^ (Literal.show value) ^ ")") ind
   | VariableAccess id ->
