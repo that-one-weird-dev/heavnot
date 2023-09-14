@@ -14,6 +14,19 @@ let cannot_access_non_object type_ =
 let undefined_index_in_object id =
   Failure ("Undefined index " ^ id ^ " in object")
 
+let undefined_type id = raise (Failure ("Undefined type " ^ id))
+
+let rec dereference_type scope (type_ : Type.t) : Type.t =
+  match type_ with
+  | Reference id ->
+      let type_ =
+        match Scope.get_type scope id with
+        | Some type_ -> type_
+        | None -> raise (undefined_type id)
+      in
+      dereference_type scope type_
+  | type_ -> type_
+
 let rec check_node scope (node : Ast.t) : Type.t =
   let open Type in
   match node with
@@ -61,7 +74,7 @@ let rec check_node scope (node : Ast.t) : Type.t =
   | ObjectAccess acc -> (
       let type_ = check_node scope acc.value in
       let obj =
-        match type_ with
+        match dereference_type scope type_ with
         | Object obj -> obj
         | type_ -> raise (cannot_access_non_object type_)
       in

@@ -39,22 +39,24 @@ and parse_body body (tokens : Token.t list) =
 
 and parse_variable (tokens : Token.t list) id (type_ : Type.t option) =
   let open Ast in
-  match tokens with
-  | Equal :: tokens ->
-      let tokens, value = parse_statement tokens in
-      (tokens, VariableDecl { identifier = id; type_; value })
-  | token :: _ -> raise (unexpected_token Token.Equal token)
-  | [] -> raise unexpected_eof
+  let tokens, value = parse_statement tokens in
+  (tokens, VariableDecl { identifier = id; type_; value })
 
 and parse_identifier (tokens : Token.t list) id =
   match tokens with
   | Colon :: Colon :: tokens ->
       let tokens, type_ = Tparser.parse_type tokens in
       (tokens, Ast.TypeDecl { identifier = id; type_ })
+  | Colon :: Equal :: tokens -> parse_variable tokens id None
   | Colon :: tokens ->
       let tokens, type_ = Tparser.parse_type tokens in
+      let tokens =
+        match tokens with
+        | Equal :: tokens -> tokens
+        | token :: _ -> raise (unexpected_token Token.Equal token)
+        | [] -> raise unexpected_eof
+      in
       parse_variable tokens id (Some type_)
-  | Equal :: _ -> parse_variable tokens id None
   | _ :: _ -> (tokens, VariableAccess id)
   | [] -> raise unexpected_eof
 
