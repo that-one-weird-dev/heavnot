@@ -18,6 +18,13 @@ let float value = FloatValue value
 let string value = StringValue value
 let external_function func = ExternalFunction func
 
+let is_truty value =
+  match value with
+  | IntValue value -> value != 0
+  | FloatValue value -> value < -0.0001 || value > 0.0001
+  | StringValue value -> String.length value != 0
+  | _ -> true
+
 let rec show_object str (fields : (string * t) list) =
   let conc_str id value = str ^ id ^ ": " ^ show value in
 

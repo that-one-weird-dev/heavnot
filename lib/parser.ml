@@ -42,6 +42,24 @@ and parse_variable (tokens : Token.t list) id (type_ : Type.t option) =
   let tokens, value = parse_statement tokens in
   (tokens, VariableDecl { identifier = id; type_; value })
 
+and parse_if (tokens : Token.t list) =
+  let tokens, condition = parse_statement tokens in
+
+  let tokens, then_body =
+    match tokens with
+    | BraceOpen :: tokens -> parse_body [] tokens
+    | token :: _ -> raise (unexpected_token Token.BraceOpen token)
+    | [] -> raise unexpected_eof
+  in
+
+  let tokens, else_body =
+    match tokens with
+    | Else :: BraceOpen :: tokens -> parse_body [] tokens
+    | tokens -> (tokens, [])
+  in
+
+  (tokens, Ast.IfExpression { condition; then_body; else_body })
+
 and parse_identifier (tokens : Token.t list) id =
   match tokens with
   | Colon :: Colon :: tokens ->
@@ -89,6 +107,7 @@ and parse_statement (tokens : Token.t list) =
         | token :: _ -> raise (unexpected_token Token.ParenClose token)
         | [] -> raise unexpected_eof)
     | BraceOpen :: tokens -> parse_object [] tokens
+    | If :: tokens -> parse_if tokens
     | token :: _ -> raise (invalid_token token)
     | [] -> raise unexpected_eof
   in

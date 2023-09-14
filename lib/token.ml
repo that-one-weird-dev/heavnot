@@ -21,6 +21,8 @@ type t =
   | Float
   | String
   | Fn
+  | If
+  | Else
 [@@deriving show]
 
 let from_identifier = function
@@ -30,4 +32,6 @@ let from_identifier = function
   | "float" -> Float
   | "string" -> String
   | "fn" -> Fn
+  | "if" -> If
+  | "else" -> Else
   | id -> Identifier id

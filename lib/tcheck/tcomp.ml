@@ -71,3 +71,9 @@ and not_can_cast scope a b = not (can_cast scope a b)
 
 and list_diff_opt (scope : Scope.t) (from : Type.t list) (into : Type.t list) =
   List.find_opt (fun (f, i) -> not_can_cast scope f i) (List.combine from into)
+
+
+let smaller_cast (scope : Scope.t) (from : Type.t) (into : Type.t) =
+    match cast scope from into with
+    | Ok type_ -> Ok type_
+    | Error (from, into) -> cast scope into from

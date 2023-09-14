@@ -1,6 +1,5 @@
 open Error
 open Heavnot
-
 module Scope = Scope
 
 let rec check_node scope (node : Ast.t) : Type.t =
@@ -73,6 +72,17 @@ let rec check_node scope (node : Ast.t) : Type.t =
           | Some (a, b) -> incompatible_type a b
           | None -> funct.return)
       | _ -> cannot_invoke_non_function_type ())
+  | IfExpression expr -> (
+      ignore (check_node scope expr.condition);
+
+      let then_scope = Scope.create (Some scope) in
+      let then_result = check_body then_scope expr.then_body in
+      let else_scope = Scope.create (Some scope) in
+      let else_result = check_body else_scope expr.else_body in
+
+      match Tcomp.smaller_cast scope then_result else_result with
+      | Ok type_ -> type_
+      | Error (from, into) -> raise (incompatible_type from into))
 
 and check_body scope (body : Ast.t list) : Type.t =
   match body with

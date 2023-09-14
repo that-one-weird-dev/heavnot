@@ -12,6 +12,7 @@ type t =
   | VariableAccess of string
   | ObjectAccess of { value : t; identifier : string }
   | FunctionCall of { value : t; params : t list }
+  | IfExpression of { condition : t; then_body : t list; else_body : t list }
 [@@deriving show]
 
 type root = { body : t list }
@@ -39,9 +40,11 @@ let rec print_node ind ast =
       print_indented ("Variable(" ^ var.identifier ^ "):") ind;
       print_node (ind + 1) var.value
   | TypeDecl decl -> print_indented ("Type(" ^ decl.identifier ^ ")") ind
-  | UnitLiteral -> print_indented ("UnitLiteral") ind
-  | IntLiteral value -> print_indented ("IntLiteral(" ^ string_of_int value ^ ")") ind
-  | FloatLiteral value -> print_indented ("Literal(" ^ string_of_float value ^ ")") ind
+  | UnitLiteral -> print_indented "UnitLiteral" ind
+  | IntLiteral value ->
+      print_indented ("IntLiteral(" ^ string_of_int value ^ ")") ind
+  | FloatLiteral value ->
+      print_indented ("Literal(" ^ string_of_float value ^ ")") ind
   | StringLiteral value -> print_indented ("Literal(" ^ value ^ ")") ind
   | ObjectLiteral _ -> print_indented "ObjectLiteral" ind
   | VariableAccess id -> print_indented ("VariableAccess(" ^ id ^ ")") ind
@@ -51,6 +54,17 @@ let rec print_node ind ast =
   | FunctionCall call ->
       print_indented "FunctionCall:" ind;
       print_node (ind + 1) call.value
+  | IfExpression call ->
+      print_indented "IfExpression:" ind;
+
+      print_indented "condition:" (ind + 1);
+      print_node (ind + 2) call.condition;
+
+      print_indented "then:" (ind + 1);
+      list_body call.then_body (ind + 2);
+
+      print_indented "else:" (ind + 1);
+      list_body call.else_body (ind + 2)
 
 let print_node = print_node 0
 let print_root root = List.iter print_node root.body

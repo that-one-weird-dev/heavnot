@@ -83,6 +83,12 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
       | Function funct -> exec_function scope funct values
       | ExternalFunction funct -> funct values
       | value -> invalid_value value)
+  | IfExpression expr ->
+      let condition_value = exec_node scope expr.condition in
+      let if_scope = Scope.create (Some scope) in
+
+      if Value.is_truty condition_value then exec_body if_scope expr.then_body
+      else exec_body if_scope expr.else_body
 
 let execute_root scope (root : Ast.root) = ignore (exec_body scope root.body)
 
