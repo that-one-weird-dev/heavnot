@@ -34,7 +34,7 @@ and exec_node (scope: Scope.t) (node: Ast.t) : Value.t =
   | Function funct ->
       let value_funct: Value.funct = { params = funct.params; body = funct.body; } in
       Value.Function value_funct
-  | Variable var ->
+  | VariableDecl var ->
       let value = exec_node scope var.value in
       Scope.set scope var.identifier value;
       value

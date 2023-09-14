@@ -6,7 +6,7 @@ type param = {
 [@@deriving show]
 
 type t =
-  | Variable of { identifier : string; type_: Type.t option; value : t; }
+  | VariableDecl of { identifier : string; type_: Type.t option; value : t; }
   | Function of { params : param list; return_type : Type.t; body : t list; }
   | Literal of Literal.t
   | VariableAccess of string
@@ -42,7 +42,7 @@ let rec print_node ind ast =
 
       print_indented "body:" (ind + 1);
       list_body func.body (ind + 2);
-  | Variable var ->
+  | VariableDecl var ->
       print_indented ("Variable(" ^ var.identifier ^ "):") ind;
       print_node (ind + 1) var.value
   | Literal value ->

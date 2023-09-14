@@ -8,7 +8,7 @@ let rec check_node scope (node : Ast.t) : Type.t =
   let open Type in
 
   match node with
-  | Variable var ->
+  | VariableDecl var ->
       let value_type = check_node scope var.value in
 
       Scope.set scope var.identifier value_type;

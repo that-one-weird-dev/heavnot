@@ -65,7 +65,7 @@ and parse_identifier (tokens: Token.t list) id =
   match tokens with
   | Equal :: tokens ->
       let tokens, value = parse_statement tokens in
-      tokens, Variable { identifier = id; type_; value; }
+      tokens, VariableDecl { identifier = id; type_; value; }
   | _ :: _ -> tokens, VariableAccess id
   | [] -> unexpected_eof ()
 
