@@ -1,0 +1,4 @@
+(executable
+ (public_name heavnot)
+ (name main)
+ (libraries heavnot interpreter tcheck))

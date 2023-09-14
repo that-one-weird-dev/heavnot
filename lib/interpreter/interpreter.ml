@@ -1,0 +1,80 @@
+open Heavnot
+
+module Scope = Scope
+module Value = Value
+
+let undefined_variable id = raise (Failure ("Undefined variable " ^ id))
+let invalid_value found = raise (Failure ("Expected value of type " ^ "**TODO**" ^ " found " ^ (Value.show found) ^ " instead"))
+let invalid_arg_count_on_function_call () = raise (Failure "Invalid arg count on function call")
+
+
+let rec exec_function (scope: Scope.t) (funct: Value.funct) (param_values: Value.t list) : Value.t =
+  let scope = Scope.create (Some scope) in
+
+  if List.length funct.params != List.length param_values then
+    invalid_arg_count_on_function_call ()
+  else
+    let params = List.combine funct.params param_values in
+    List.iter (fun ((p: Ast.param), v) -> Scope.set scope p.identifier v) params;
+
+    exec_body scope funct.body
+
+
+and exec_body (scope: Scope.t) (body: Ast.t list) : Value.t =
+  match body with
+  | node :: [] -> exec_node scope node
+  | node :: body ->
+      ignore (exec_node scope node);
+      exec_body scope body
+  | [] -> Unit
+
+
+and exec_node (scope: Scope.t) (node: Ast.t) : Value.t =
+  match node with
+  | Function funct ->
+      let value_funct: Value.funct = { params = funct.params; body = funct.body; } in
+      Value.Function value_funct
+  | Variable var ->
+      let value = exec_node scope var.value in
+      Scope.set scope var.identifier value;
+      value
+  | Literal value ->
+      let value: Value.t = match value with
+      | IntLiteral value -> IntValue value
+      | FloatLiteral value -> FloatValue value
+      | StringLiteral value -> StringValue value
+      in
+      value
+  | VariableAccess id ->
+      let value = Scope.get scope id in
+      let value = match value with
+      | Some value -> value
+      | None -> undefined_variable id
+      in
+      value
+  | FunctionCall call ->
+      let value = exec_node scope call.value in
+      let funct = match value with
+      | Function funct -> funct
+      | value -> invalid_value value
+      in
+
+      let values = List.map (exec_node scope) call.params in
+
+      exec_function scope funct values
+;;
+
+
+let execute (root: Ast.root) =
+  let scope = Scope.create None in
+
+  ignore (exec_body scope root.body);
+  scope
+;;
+
+let execute_function scope id =
+  let value = Scope.get scope id in
+  match value with
+  | Some Function funct -> exec_function scope funct []
+  | _ -> raise (Failure ("No function named " ^ id))
+;;

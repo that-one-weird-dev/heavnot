@@ -1,0 +1,15 @@
+
+
+type :: string
+
+a = 10
+
+idk = (a: int): int {
+  a
+}
+
+
+main = (): int {
+  idk(10)
+}
+
