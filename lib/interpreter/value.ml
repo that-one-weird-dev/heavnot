@@ -11,6 +11,7 @@ type t =
   | StringValue of string
   | BoolValue of bool
   | Object of (string, t) Hashtbl.t
+  | Union of { variant : string; value : t }
   | List of { mutable values : t list }
   | ExternalFunction of (t list -> t)
 
@@ -60,6 +61,7 @@ and show = function
   | StringValue value -> value
   | BoolValue value -> string_of_bool value
   | Object fields -> show_object "" (List.of_seq (Hashtbl.to_seq fields))
+  | Union union -> union.variant ^ "(" ^ show union.value ^ ")"
   | List list -> show_list "" list.values
   | ExternalFunction _ -> "EXTERNAL_FUNCTION"
 
