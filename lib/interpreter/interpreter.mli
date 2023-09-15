@@ -13,11 +13,10 @@ end
 module Scope : sig
     type t
 
-    val create : t option -> t
-
     val get : t -> string -> Value.t option
     val set : t -> string -> Value.t -> unit
 end
 
+val create_scope : unit -> Scope.t
 val execute_root : Scope.t -> Heavnot.Ast.root -> unit
 val execute_function : Scope.t -> string -> Value.t

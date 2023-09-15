@@ -91,6 +91,11 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
       if Value.is_truty condition_value then exec_body if_scope expr.then_body
       else exec_body if_scope expr.else_body
 
+let create_scope () =
+    let scope = Scope.create None in
+    Intrinsics.register scope;
+    scope
+
 let execute_root scope (root : Ast.root) = ignore (exec_body scope root.body)
 
 let execute_function scope id =

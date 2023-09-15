@@ -34,7 +34,7 @@ and can_function_cast scope a_params a_ret b_params b_ret =
   else
     let params_delta =
       List.find_opt
-        (fun (a, b) -> can_cast scope a b)
+        (fun (a, b) -> not_can_cast scope a b)
         (List.combine a_params b_params)
     in
     let params_match =

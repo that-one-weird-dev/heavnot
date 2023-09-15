@@ -93,5 +93,10 @@ and check_body scope (body : Ast.t list) : Type.t =
       check_body scope body
   | [] -> Type.Unit
 
+let create_scope () =
+    let scope = Scope.create None in
+    Intrinsics.register scope;
+    scope
+
 let check_root scope (root : Ast.root) =
   List.iter (fun n -> ignore (check_node scope n)) root.body

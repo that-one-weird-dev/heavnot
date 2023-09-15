@@ -11,6 +11,7 @@ type t =
   | StringValue of string
   | BoolValue of bool
   | Object of (string, t) Hashtbl.t
+  | List of { mutable values : t list }
   | ExternalFunction of (t list -> t)
 
 let unit () = Unit
@@ -45,6 +46,12 @@ and show_function str ret params =
   | param :: params -> show_function (conc_str param ^ ", ") ret params
   | [] -> "(): " ^ Type.show ret
 
+and show_list str values =
+  match values with
+  | value :: [] -> "[" ^ str ^ show value ^ "]"
+  | value :: values -> show_list (str ^ show value ^ ", ") values
+  | [] -> "[]"
+
 and show = function
   | Unit -> "()"
   | Function funct -> show_function "" funct.return funct.params
@@ -53,6 +60,7 @@ and show = function
   | StringValue value -> value
   | BoolValue value -> string_of_bool value
   | Object fields -> show_object "" (List.of_seq (Hashtbl.to_seq fields))
+  | List list -> show_list "" list.values
   | ExternalFunction _ -> "EXTERNAL_FUNCTION"
 
 let pp ppf value = Format.fprintf ppf "%s" (show value)

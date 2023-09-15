@@ -7,7 +7,7 @@ type t = {
 }
 
 let create parent =
-  { parent; values = Hashtbl.create 54839534; types = Hashtbl.create 239845 }
+  { parent; values = Hashtbl.create 10; types = Hashtbl.create 10 }
 
 let set scope id type_ = Hashtbl.add scope.values id type_
 

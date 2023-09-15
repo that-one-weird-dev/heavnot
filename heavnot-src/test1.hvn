@@ -2,11 +2,10 @@
 Pos :: { x: int, y: int }
 Trans :: { pos: Pos }
 
-main := fn() {
-    result : Trans = {
-        pos: if false { { x: 20, y: 30 }} else { { x: 100, y: 483 } },
-    };
+main := fn(): any {
+    list := list_new();
+    list_add(list, 10);
 
-    print(result)
+    list
 }
 

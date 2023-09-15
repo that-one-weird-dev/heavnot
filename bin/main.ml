@@ -17,13 +17,13 @@ let () =
   let tokens = Lexer.tokenize lines in
   let root = Parser.parse tokens in
 
-  let scope = Tcheck.Scope.create None in
+  let scope = Tcheck.create_scope () in
   Tcheck.Scope.set scope "print"
     (Type.Function { params = [ Type.Any ]; return = Type.Unit });
 
   Tcheck.check_root scope root;
 
-  let scope = Interpreter.Scope.create None in
+  let scope = Interpreter.create_scope () in
 
   let print =
     Interpreter.Value.external_function (fun params ->
