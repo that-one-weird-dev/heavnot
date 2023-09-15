@@ -65,6 +65,8 @@ and parse_identifier (tokens : Token.t list) id =
   | Is :: tokens ->
       let tokens, type_ = Tparser.parse_type tokens in
       (tokens, Ast.TypeDecl { identifier = id; type_ })
+  | Colon :: Colon :: Identifier identifier :: tokens ->
+      (tokens, TypeAccess { type_ = Type.Reference id; identifier })
   | Colon :: Equal :: tokens -> parse_variable tokens id None
   | Colon :: tokens ->
       let tokens, type_ = Tparser.parse_type tokens in
