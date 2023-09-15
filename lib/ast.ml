@@ -12,7 +12,7 @@ type t =
   | ObjectLiteral of (string * t) list
   | VariableAccess of string
   | ObjectAccess of { value : t; identifier : string }
-  | TypeAccess of { type_ : t; identifier : string }
+  | TypeAccess of { type_ : Type.t; identifier : string }
   | FunctionCall of { value : t; params : t list }
   | IfExpression of { condition : t; then_body : t list; else_body : t list }
 [@@deriving show]
