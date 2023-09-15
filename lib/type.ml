@@ -1,7 +1,6 @@
 type t =
-  | Never
-  | Any
   | Unit
+  | Never
   | Int
   | Float
   | String
@@ -27,9 +26,8 @@ and show_function str ret params =
   | [] -> "(): " ^ show ret
 
 and show = function
-  | Never -> "never"
-  | Any -> "any"
   | Unit -> "()"
+  | Never -> "never"
   | Int -> "int"
   | Float -> "float"
   | String -> "string"

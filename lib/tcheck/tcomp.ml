@@ -50,12 +50,7 @@ and cast (scope : Scope.t) (from : Type.t) (into : Type.t) :
   let into = Tutils.dereference_type scope into in
 
   match (from, into) with
-  | Unit, Unit
-  | Int, Int
-  | Float, Float
-  | String, String
-  | Never, Never
-  | Any, Any ->
+  | Unit, Unit | Int, Int | Float, Float | String, String | Never, Never ->
       Ok into
   | Object obj_from, Object obj_into ->
       if can_object_cast scope obj_from obj_into then Ok into
@@ -66,7 +61,7 @@ and cast (scope : Scope.t) (from : Type.t) (into : Type.t) :
           func_into.params func_into.return
       then Ok into
       else Error (from, into)
-  | _, Any -> Ok Any
+  | _, Unit -> Ok Unit
   | from, into -> Error (from, into)
 
 and can_cast scope a b =

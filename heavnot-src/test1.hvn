@@ -2,7 +2,7 @@
 Pos :: { x: int, y: int }
 Trans :: { pos: Pos }
 
-main := fn(): any {
+main := fn() {
     list := list_new();
     list_add(list, 10);
 
