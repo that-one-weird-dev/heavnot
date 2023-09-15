@@ -1,11 +1,14 @@
 
-Pos :: { x: int, y: int }
-Trans :: { pos: Pos }
+Vec2 is { x: int, y: int }
+Vec3 is { x: int, y: int, z: int }
+
+Position is
+    | Pos2: Vec2
+    | Pos3: Vec3
 
 main := fn() {
-    list := list_new();
-    list_add(list, 10);
+    val := Position::Pos2({ x: 10, y: 20 });
 
-    list
+    val
 }
 

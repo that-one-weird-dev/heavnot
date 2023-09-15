@@ -15,6 +15,7 @@ type t =
   | Colon
   | Dot
   | Semicolon
+  | Pipe
   (* keywords *)
   | Unit
   | Int
@@ -24,6 +25,7 @@ type t =
   | Fn
   | If
   | Else
+  | Is
 [@@deriving show]
 
 let from_identifier = function
@@ -37,4 +39,5 @@ let from_identifier = function
   | "fn" -> Fn
   | "if" -> If
   | "else" -> Else
+  | "is" -> Is
   | id -> Identifier id

@@ -9,6 +9,7 @@ let rec parse_type (tokens : Token.t list) =
   | Identifier id :: tokens -> (tokens, Reference id)
   | BraceOpen :: tokens -> parse_object_type [] tokens
   | ParenOpen :: tokens -> parse_function_type [] tokens
+  | Pipe :: tokens -> parse_union_type [] tokens
   | token :: _ -> raise (Error.invalid_token token)
   | [] -> raise Error.unexpected_eof
 
@@ -44,3 +45,15 @@ and parse_function_type (params : Type.t list) (tokens : Token.t list) =
       | Comma :: tokens -> parse_function_type (param :: params) tokens
       | token :: _ -> raise (Error.unexpected_token Token.BraceClose token)
       | [] -> raise Error.unexpected_eof)
+
+and parse_union_type (variants : (string * Type.t) list) (tokens : Token.t list) =
+    match tokens with
+    | Identifier id :: Colon :: tokens -> (
+        let tokens, type_ = parse_type tokens in
+        let variant = (id, type_) in
+        match tokens with
+        | Pipe :: tokens -> parse_union_type (variant :: variants) tokens
+        | tokens -> tokens, Union (variant :: variants)
+    )
+    | token :: _ -> raise (Error.invalid_token token)
+    | [] -> raise Error.unexpected_eof

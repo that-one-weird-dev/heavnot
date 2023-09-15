@@ -14,3 +14,6 @@ let cannot_access_non_object type_ =
 
 let undefined_index_in_object id =
   Failure ("Undefined index " ^ id ^ " in object")
+
+let cannot_index_type type_ = Failure ("Cannot index type " ^ Type.show type_)
+let undefined_type_index type_ identifier = Failure ("Undefined index " ^ identifier ^ " in type " ^ Type.show type_)

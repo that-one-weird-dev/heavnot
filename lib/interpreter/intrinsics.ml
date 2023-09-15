@@ -1,4 +1,3 @@
-let unexpected_error = Failure "Unexpected error"
 let list_new (_ : Value.t list) = Value.List { values = [] }
 
 let list_add values =
@@ -6,7 +5,7 @@ let list_add values =
   | Value.List list :: value :: _ ->
       list.values <- value :: list.values;
       Value.Unit
-  | _ -> raise unexpected_error
+  | _ -> raise Error.unexpected_error
 
 let register scope =
   Scope.set scope "list_new" (Value.ExternalFunction list_new);

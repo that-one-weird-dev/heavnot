@@ -62,7 +62,7 @@ and parse_if (tokens : Token.t list) =
 
 and parse_identifier (tokens : Token.t list) id =
   match tokens with
-  | Colon :: Colon :: tokens ->
+  | Is :: tokens ->
       let tokens, type_ = Tparser.parse_type tokens in
       (tokens, Ast.TypeDecl { identifier = id; type_ })
   | Colon :: Equal :: tokens -> parse_variable tokens id None

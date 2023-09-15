@@ -76,6 +76,9 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
       in
 
       Hashtbl.find obj acc.identifier
+    | TypeAccess acc ->
+        let type_ = Tutils.dereference_type scope acc.type_ in
+        TypeIndex.index_type type_ acc.identifier
   | FunctionCall call -> (
       let value = exec_node scope call.value in
       let values = List.map (exec_node scope) call.params in

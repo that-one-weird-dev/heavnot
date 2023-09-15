@@ -12,6 +12,7 @@ type t =
   | ObjectLiteral of (string * t) list
   | VariableAccess of string
   | ObjectAccess of { value : t; identifier : string }
+  | TypeAccess of { type_ : t; identifier : string }
   | FunctionCall of { value : t; params : t list }
   | IfExpression of { condition : t; then_body : t list; else_body : t list }
 [@@deriving show]
@@ -54,6 +55,9 @@ let rec print_node ind ast =
   | ObjectAccess acc ->
       print_indented ("ObjectAccess(" ^ acc.identifier ^ "):") ind;
       print_node (ind + 1) acc.value
+  | TypeAccess acc ->
+      print_indented ("TypeAccess(" ^ acc.identifier ^ "):") ind;
+      print_indented (Type.show acc.type_) (ind + 1)
   | FunctionCall call ->
       print_indented "FunctionCall:" ind;
       print_node (ind + 1) call.value

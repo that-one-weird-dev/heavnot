@@ -38,7 +38,7 @@ let rec check_node scope (node : Ast.t) : Type.t =
   | IntLiteral _ -> Type.Int
   | FloatLiteral _ -> Type.Float
   | StringLiteral _ -> Type.String
-    | BoolLiteral _ -> Type.Bool
+  | BoolLiteral _ -> Type.Bool
   | ObjectLiteral value ->
       Object (List.map (fun (id, value) -> (id, check_node scope value)) value)
   | VariableAccess id ->
@@ -61,6 +61,9 @@ let rec check_node scope (node : Ast.t) : Type.t =
       match field_obj with
       | Some (_, type_) -> type_
       | None -> raise (undefined_index_in_object acc.identifier))
+  | TypeAccess acc ->
+      let type_ = Tutils.dereference_type scope acc.type_ in
+      TypeIndex.index_type type_ acc.identifier
   | FunctionCall call -> (
       let funct = check_node scope call.value in
       match funct with
@@ -94,9 +97,9 @@ and check_body scope (body : Ast.t list) : Type.t =
   | [] -> Type.Unit
 
 let create_scope () =
-    let scope = Scope.create None in
-    Intrinsics.register scope;
-    scope
+  let scope = Scope.create None in
+  Intrinsics.register scope;
+  scope
 
 let check_root scope (root : Ast.root) =
   List.iter (fun n -> ignore (check_node scope n)) root.body
