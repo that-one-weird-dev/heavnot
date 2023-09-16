@@ -1,4 +1,4 @@
 (executable
  (public_name heavnot)
  (name main)
- (libraries heavnot typer interpreter))
+ (libraries heavnot typeCheck interpreter))
