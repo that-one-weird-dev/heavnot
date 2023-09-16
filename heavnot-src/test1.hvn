@@ -4,11 +4,13 @@ Vec2 is { x: int, y: int }
 Vec3 is { x: int, y: int, z: int }
 
 Position is
+    | Pos0
     | Pos1: Vec1
     | Pos2: Vec2
     | Pos3: Vec3
 
 main := fn() {
+    val0 := Position::Pos0(());
     val1 := Position::Pos1({ x: 10 });
     val2 := Position::Pos2({ x: 10, y: 20 });
     val3 := Position::Pos3({ x: 10, y: 20, z: 30 });
