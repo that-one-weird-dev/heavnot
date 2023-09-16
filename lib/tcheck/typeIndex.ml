@@ -12,7 +12,10 @@ let index_union variants identifier =
     | None -> raise (undefined_type_index (Union variants) identifier)
   in
 
-  Type.Function { params = [ prop_type ]; return = Union variants }
+  match prop_type with
+  | Type.Unit -> Type.Union variants
+  | prop_type ->
+      Type.Function { params = [ prop_type ]; return = Union variants }
 
 let index_type (type_ : Type.t) identifier =
   match type_ with
