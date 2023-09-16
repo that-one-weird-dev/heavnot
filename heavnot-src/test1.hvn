@@ -3,11 +3,12 @@ Vec1 is { x: int }
 Vec2 is { x: int, y: int }
 Vec3 is { x: int, y: int, z: int }
 
-Position is
-    | Pos0
-    | Pos1: Vec1
-    | Pos2: Vec2
-    | Pos3: Vec3
+Position is enum {
+    Pos0,
+    Pos1: Vec1,
+    Pos2: Vec2,
+    Pos3: Vec3,
+}
 
 main := fn() {
     val0 := Position::Pos0;

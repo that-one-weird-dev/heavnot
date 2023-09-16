@@ -25,6 +25,7 @@ type t =
   | Float
   | String
   | Bool
+  | Enum
   | Fn
   | If
   | Else
@@ -45,4 +46,5 @@ let from_identifier = function
   | "else" -> Else
   | "is" -> Is
   | "match" -> Match
+  | "enum" -> Enum
   | id -> Identifier id
