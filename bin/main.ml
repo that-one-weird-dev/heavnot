@@ -17,11 +17,11 @@ let () =
   let tokens = Lexer.tokenize lines in
   let root = Parser.parse tokens in
 
-  let scope = Tcheck.create_scope () in
-  Tcheck.Scope.set scope "print"
+  let scope = Typer.create_scope () in
+  Typer.Scope.set scope "print"
     (Type.Function { params = [ Type.Unit ]; return = Type.Unit });
 
-  Tcheck.check_root scope root;
+  Typer.check_root scope root;
 
   let scope = Interpreter.create_scope () in
 
