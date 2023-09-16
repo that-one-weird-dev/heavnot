@@ -49,7 +49,7 @@ and parse_function_type (params : Type.t list) (tokens : Token.t list) =
 and parse_union_type (variants : (string * Type.t) list) (tokens : Token.t list)
     =
   match tokens with
-  | BraceClose :: tokens -> (tokens, Type.Union variants)
+  | BraceClose :: tokens -> (tokens, Type.Enum variants)
   | Identifier id :: tokens -> (
       let tokens, type_ =
         match tokens with
@@ -59,7 +59,7 @@ and parse_union_type (variants : (string * Type.t) list) (tokens : Token.t list)
       let variant = (id, type_) in
 
       match tokens with
-      | BraceClose :: tokens -> (tokens, Type.Union (variant :: variants))
+      | BraceClose :: tokens -> (tokens, Type.Enum (variant :: variants))
       | Comma :: tokens -> parse_union_type (variant :: variants) tokens
       | token :: _ -> raise (Error.invalid_token token)
       | [] -> raise Error.unexpected_eof)

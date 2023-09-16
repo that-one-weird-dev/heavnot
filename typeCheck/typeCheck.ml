@@ -91,7 +91,7 @@ let rec check_node scope (node : Ast.t) : Type.t =
       let value_type = check_node scope expr.value in
       let variant_types =
         match value_type with
-        | Union union -> union
+        | Enum enum -> enum
         | type_ -> raise (cannot_match_non_union type_)
       in
 
@@ -111,7 +111,7 @@ let rec check_node scope (node : Ast.t) : Type.t =
                   | Some (_, type_) -> type_
                   | None ->
                       raise
-                        (undefined_type_index (Union variant_types)
+                        (undefined_type_index (Enum variant_types)
                            variant.identifier)
                 in
                 Scope.set branch_scope variant.identifier variant_type;

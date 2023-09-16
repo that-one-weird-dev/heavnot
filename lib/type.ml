@@ -6,7 +6,7 @@ type t =
   | String
   | Bool
   | Object of (string * t) list
-  | Union of (string * t) list
+  | Enum of (string * t) list
   | Function of { params : t list; return : t }
   | Reference of string
 
@@ -34,7 +34,7 @@ and show = function
   | String -> "string"
   | Bool -> "bool"
   | Object fields -> show_object "{ " fields
-  | Union variants -> show_object "enum { " variants
+  | Enum variants -> show_object "enum { " variants
   | Function funct -> show_function "" funct.return funct.params
   | Reference id -> id
 

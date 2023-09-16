@@ -84,7 +84,7 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
       let value = exec_node scope expr.value in
       let variant, value =
         match value with
-        | Union union -> (union.variant, union.value)
+        | Enum enum -> (enum.variant, enum.value)
         | value -> raise (cannot_match_non_union value)
       in
       let branch =
