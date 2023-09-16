@@ -75,6 +75,9 @@ let tokenize_statement input pos =
   | '.' -> (pos + 1, Some Dot)
   | ';' -> (pos + 1, Some Semicolon)
   | '|' -> (pos + 1, Some Pipe)
+  | '<' -> (pos + 1, Some Lesser)
+  | '>' -> (pos + 1, Some Greater)
+  | '_' -> (pos + 1, Some Underscore)
   | _ -> invalid_character pos
 
 let rec tokenize tokens pos input =

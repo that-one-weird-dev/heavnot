@@ -1,7 +1,5 @@
+open Error
 open Heavnot
-
-let undefined_type id = raise (Failure ("Undefined type " ^ id))
-let cant_compare_functions () = raise (Failure "Cant compare functions")
 
 let get_type scope id =
   match Scope.get_type scope id with
@@ -71,6 +69,15 @@ and not_can_cast scope a b = not (can_cast scope a b)
 
 and list_diff_opt (scope : Scope.t) (from : Type.t list) (into : Type.t list) =
   List.find_opt (fun (f, i) -> not_can_cast scope f i) (List.combine from into)
+
+let list_all_equal (scope : Scope.t) (types : Type.t list) =
+  match types with
+  | into :: types -> (
+        match List.find_opt (fun f -> not_can_cast scope f into) types with
+            | Some f -> Error (f, into)
+            | None -> Ok into
+)
+  | [] -> raise unexpected_error
 
 let smaller_cast (scope : Scope.t) (from : Type.t) (into : Type.t) =
   match cast scope from into with

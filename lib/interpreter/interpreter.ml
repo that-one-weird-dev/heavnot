@@ -1,20 +1,7 @@
+open Error
 open Heavnot
 module Value = Value
 module Scope = Scope
-
-let undefined_variable id = raise (Failure ("Undefined variable " ^ id))
-
-let invalid_value found =
-  raise
-    (Failure
-       ("Expected value of type " ^ "**TODO**" ^ " found " ^ Value.show found
-      ^ " instead"))
-
-let invalid_arg_count_on_function_call () =
-  raise (Failure "Invalid arg count on function call")
-
-let cannot_access_non_object value =
-  Failure ("Cannot index into non object value of type " ^ Value.show value)
 
 let rec exec_function (scope : Scope.t) (funct : Value.funct)
     (param_values : Value.t list) : Value.t =
@@ -56,7 +43,7 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
   | IntLiteral value -> IntValue value
   | FloatLiteral value -> FloatValue value
   | StringLiteral value -> StringValue value
-        | BoolLiteral value -> BoolValue value
+  | BoolLiteral value -> BoolValue value
   | ObjectLiteral value ->
       let obj = Hashtbl.create 784593 in
       List.iter (fun (id, t) -> Hashtbl.add obj id (exec_node scope t)) value;
@@ -76,9 +63,9 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
       in
 
       Hashtbl.find obj acc.identifier
-    | TypeAccess acc ->
-        let type_ = Tutils.dereference_type scope acc.type_ in
-        TypeIndex.index_type type_ acc.identifier
+  | TypeAccess acc ->
+      let type_ = Tutils.dereference_type scope acc.type_ in
+      TypeIndex.index_type type_ acc.identifier
   | FunctionCall call -> (
       let value = exec_node scope call.value in
       let values = List.map (exec_node scope) call.params in
@@ -93,11 +80,36 @@ and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
 
       if Value.is_truty condition_value then exec_body if_scope expr.then_body
       else exec_body if_scope expr.else_body
+  | MatchExpression expr -> (
+      let value = exec_node scope expr.value in
+      let variant, value =
+        match value with
+        | Union union -> (union.variant, union.value)
+        | value -> raise (cannot_match_non_union value)
+      in
+      let branch =
+        List.find_opt
+          (fun (branch : Ast.match_branch) ->
+            match branch.variant with
+            | Ast.MatchIdentifier { identifier; var_identifier = _ } ->
+                String.equal identifier variant
+            | MatchDefault -> true)
+          expr.branches
+      in
+      match branch with
+      | Some branch ->
+          let match_scope = Scope.create (Some scope) in
+          (match branch.variant with
+          | Ast.MatchIdentifier id ->
+              Scope.set match_scope id.var_identifier value
+          | MatchDefault -> ());
+          exec_body match_scope branch.body
+      | None -> raise unexpected_error)
 
 let create_scope () =
-    let scope = Scope.create None in
-    Intrinsics.register scope;
-    scope
+  let scope = Scope.create None in
+  Intrinsics.register scope;
+  scope
 
 let execute_root scope (root : Ast.root) = ignore (exec_body scope root.body)
 

@@ -16,6 +16,9 @@ type t =
   | Dot
   | Semicolon
   | Pipe
+  | Lesser
+  | Greater
+  | Underscore
   (* keywords *)
   | Unit
   | Int
@@ -26,6 +29,7 @@ type t =
   | If
   | Else
   | Is
+  | Match
 [@@deriving show]
 
 let from_identifier = function
@@ -40,4 +44,5 @@ let from_identifier = function
   | "if" -> If
   | "else" -> Else
   | "is" -> Is
+  | "match" -> Match
   | id -> Identifier id

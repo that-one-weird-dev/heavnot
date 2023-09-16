@@ -60,6 +60,39 @@ and parse_if (tokens : Token.t list) =
 
   (tokens, Ast.IfExpression { condition; then_body; else_body })
 
+and parse_match_body branches (tokens : Token.t list) =
+  match tokens with
+  | Underscore :: Equal :: Greater :: BraceOpen :: tokens ->
+      let tokens, body = parse_body [] tokens in
+      let branch : Ast.match_branch = { variant = Ast.MatchDefault; body } in
+      parse_match_body (branch :: branches) tokens
+  | Identifier variant
+    :: Identifier var_identifier
+    :: Equal :: Greater :: BraceOpen :: tokens ->
+      let tokens, body = parse_body [] tokens in
+      let variant =
+        Ast.MatchIdentifier { identifier = variant; var_identifier }
+      in
+      let branch : Ast.match_branch = { variant; body } in
+      parse_match_body (branch :: branches) tokens
+  | BraceClose :: tokens -> (tokens, List.rev branches)
+  | token :: _ -> raise (invalid_token token)
+  | [] -> raise unexpected_eof
+
+and parse_match (tokens : Token.t list) =
+  let open Ast in
+  let tokens, value = parse_statement tokens in
+
+  let tokens =
+    match tokens with
+    | BraceOpen :: tokens -> tokens
+    | token :: _ -> raise (unexpected_token Token.BraceOpen token)
+    | [] -> raise unexpected_eof
+  in
+
+  let tokens, branches = parse_match_body [] tokens in
+  (tokens, MatchExpression { value; branches })
+
 and parse_identifier (tokens : Token.t list) id =
   match tokens with
   | Is :: tokens ->
@@ -111,6 +144,7 @@ and parse_statement (tokens : Token.t list) =
         | [] -> raise unexpected_eof)
     | BraceOpen :: tokens -> parse_object [] tokens
     | If :: tokens -> parse_if tokens
+    | Match :: tokens -> parse_match tokens
     | token :: _ -> raise (invalid_token token)
     | [] -> raise unexpected_eof
   in

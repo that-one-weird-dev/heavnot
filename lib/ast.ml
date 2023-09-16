@@ -1,5 +1,3 @@
-type param = { identifier : string; type_ : Type.t } [@@deriving show]
-
 type t =
   | VariableDecl of { identifier : string; type_ : Type.t option; value : t }
   | TypeDecl of { identifier : string; type_ : Type.t }
@@ -15,7 +13,16 @@ type t =
   | TypeAccess of { type_ : Type.t; identifier : string }
   | FunctionCall of { value : t; params : t list }
   | IfExpression of { condition : t; then_body : t list; else_body : t list }
-[@@deriving show]
+  | MatchExpression of { value : t; branches : match_branch list }
+
+and param = { identifier : string; type_ : Type.t }
+
+and match_branch = {
+  variant : match_branch_variant;
+  body : t list;
+}
+
+and match_branch_variant = MatchIdentifier of { identifier : string; var_identifier : string } | MatchDefault [@@deriving show]
 
 type root = { body : t list }
 
@@ -72,6 +79,19 @@ let rec print_node ind ast =
 
       print_indented "else:" (ind + 1);
       list_body call.else_body (ind + 2)
+  | MatchExpression expr ->
+      print_indented "MatchExpression:" ind;
+      print_indented "value:" (ind + 1);
+      print_node (ind + 2) expr.value;
+
+      print_indented "branches:" (ind + 1);
+      List.iter
+        (fun branch ->
+          print_indented
+            (show_match_branch_variant branch.variant ^ ":")
+            (ind + 2);
+          list_body branch.body (ind + 3))
+        expr.branches
 
 let print_node = print_node 0
 let print_root root = List.iter print_node root.body

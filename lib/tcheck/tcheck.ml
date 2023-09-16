@@ -87,6 +87,41 @@ let rec check_node scope (node : Ast.t) : Type.t =
       match Tcomp.smaller_cast scope then_result else_result with
       | Ok type_ -> type_
       | Error (from, into) -> raise (incompatible_type from into))
+  | MatchExpression expr -> (
+      let value_type = check_node scope expr.value in
+      let variant_types =
+        match value_type with
+        | Union union -> union
+        | type_ -> raise (cannot_match_non_union type_)
+      in
+
+      let branch_types =
+        List.map
+          (fun (branch : Ast.match_branch) ->
+            let branch_scope = Scope.create (Some scope) in
+            match branch.variant with
+            | Ast.MatchIdentifier variant ->
+                let variant_type =
+                  List.find_opt
+                    (fun (v, _) -> String.equal v variant.identifier)
+                    variant_types
+                in
+                let variant_type =
+                  match variant_type with
+                  | Some (_, type_) -> type_
+                  | None ->
+                      raise
+                        (undefined_type_index (Union variant_types)
+                           variant.identifier)
+                in
+                Scope.set branch_scope variant.identifier variant_type;
+                check_body branch_scope branch.body
+            | MatchDefault -> check_body branch_scope branch.body)
+          expr.branches
+      in
+      match Tcomp.list_all_equal scope branch_types with
+      | Ok type_ -> type_
+      | Error (from, into) -> raise (incompatible_type from into))
 
 and check_body scope (body : Ast.t list) : Type.t =
   match body with
