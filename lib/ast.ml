@@ -1,7 +1,9 @@
+[@@@warning "-30"]
+
 type t =
   | VariableDecl of { identifier : string; type_ : Type.t option; value : t }
   | TypeDecl of { identifier : string; type_ : Type.t }
-  | Function of { params : param list; return_type : Type.t; body : t list }
+  | FunctionDecl of funct
   | UnitLiteral
   | IntLiteral of int
   | FloatLiteral of float
@@ -17,12 +19,19 @@ type t =
 
 and param = { identifier : string; type_ : Type.t }
 
-and match_branch = {
-  variant : match_branch_variant;
+and funct = {
+  identifier : string;
+  params : param list;
+  return_type : Type.t;
   body : t list;
 }
 
-and match_branch_variant = MatchIdentifier of { identifier : string; var_identifier : string } | MatchDefault [@@deriving show]
+and match_branch = { variant : match_branch_variant; body : t list }
+
+and match_branch_variant =
+  | MatchIdentifier of { identifier : string; var_identifier : string }
+  | MatchDefault
+[@@deriving show]
 
 type root = { body : t list }
 
@@ -37,8 +46,8 @@ let rec print_node ind ast =
   let list_body body ind = List.iter (fun a -> print_node ind a) body in
 
   match ast with
-  | Function func ->
-      print_indented "Function:" ind;
+  | FunctionDecl func ->
+      print_indented ("Function(" ^ func.identifier ^ "):") ind;
 
       print_indented "params:" (ind + 1);
       List.iter (fun p -> print_indented p.identifier (ind + 2)) func.params;

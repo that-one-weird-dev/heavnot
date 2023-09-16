@@ -27,15 +27,17 @@ and exec_body (scope : Scope.t) (body : Ast.t list) : Value.t =
 
 and exec_node (scope : Scope.t) (node : Ast.t) : Value.t =
   match node with
-  | Function funct ->
+  | FunctionDecl funct ->
       let value_funct : Value.funct =
         { params = funct.params; return = funct.return_type; body = funct.body }
       in
-      Value.Function value_funct
+      let value = Value.Function value_funct in
+      Scope.set scope funct.identifier value;
+      Value.Unit
   | VariableDecl var ->
       let value = exec_node scope var.value in
       Scope.set scope var.identifier value;
-      value
+      Value.Unit
   | TypeDecl decl ->
       Scope.set_type scope decl.identifier decl.type_;
       Unit

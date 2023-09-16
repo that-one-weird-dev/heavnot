@@ -135,7 +135,7 @@ and parse_statement (tokens : Token.t list) =
     | FloatLiteral value :: tokens -> (tokens, FloatLiteral value)
     | StringLiteral value :: tokens -> (tokens, StringLiteral value)
     | BoolLiteral value :: tokens -> (tokens, BoolLiteral value)
-    | Fn :: ParenOpen :: tokens -> parse_function tokens
+    | Fn :: Identifier identifier :: ParenOpen :: tokens -> parse_function identifier tokens
     | ParenOpen :: tokens -> (
         let tokens, statement = parse_statement tokens in
         match tokens with
@@ -151,7 +151,7 @@ and parse_statement (tokens : Token.t list) =
 
   parse_suffix tokens statement
 
-and parse_function (tokens : Token.t list) =
+and parse_function identifier (tokens : Token.t list) =
   let tokens, params = parse_parameters [] tokens in
 
   let tokens, return_type =
@@ -168,7 +168,7 @@ and parse_function (tokens : Token.t list) =
   in
 
   let tokens, body = parse_body [] tokens in
-  (tokens, Function { params; return_type; body })
+  (tokens, FunctionDecl { identifier : string; params; return_type; body })
 
 and parse_object values (tokens : Token.t list) =
   match tokens with

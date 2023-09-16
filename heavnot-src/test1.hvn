@@ -10,7 +10,7 @@ Position is enum {
     Pos3: Vec3,
 }
 
-main := fn() {
+fn main() {
     val0 := Position::Pos0;
     val1 := Position::Pos1({ x: 10 });
     val2 := Position::Pos2({ x: 10, y: 20 });
