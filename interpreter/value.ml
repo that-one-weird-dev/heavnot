@@ -12,7 +12,6 @@ type t =
   | BoolValue of bool
   | Object of (string, t) Hashtbl.t
   | Enum of { variant : string; value : t }
-  | List of { mutable values : t list }
   | ExternalFunction of (t list -> t)
 
 let unit () = Unit
@@ -62,7 +61,6 @@ and show = function
   | BoolValue value -> string_of_bool value
   | Object fields -> show_object "" (List.of_seq (Hashtbl.to_seq fields))
   | Enum enum -> enum.variant ^ "(" ^ show enum.value ^ ")"
-  | List list -> show_list "" list.values
   | ExternalFunction _ -> "EXTERNAL_FUNCTION"
 
 let pp ppf value = Format.fprintf ppf "%s" (show value)

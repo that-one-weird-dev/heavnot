@@ -3,10 +3,12 @@ open Heavnot
 let list_type () =
   Type.Object
     [
-        "|List|", Type.Unit;
+      "add", Type.Function { params = [ Type.Unit ]; return = Type.Unit };
+      "get", Type.Function { params = [ Type.Int ]; return = Type.Unit };
     ]
 
 let list_new () = Type.Function { params = []; return = Type.Reference "List" }
+
 let list_add () =
   Type.Function
     { params = [ Type.Reference "List"; Type.Unit ]; return = Type.Unit }

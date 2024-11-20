@@ -10,16 +10,15 @@ Position is enum {
     Pos3: Vec3,
 }
 
-fn main() {
-    val0 := Position::Pos0;
-    val1 := Position::Pos1({ x: 10 });
-    val2 := Position::Pos2({ x: 10, y: 20 });
-    val3 := Position::Pos3({ x: 10, y: 20, z: 30 });
-
-    str := match val1 {
-        Pos2 p => { "pos2" }
-        _ => { "default" }
-    };
-    print(str)
+fn test() {
 }
 
+fn main() {
+    test_list := list_new();
+    test_list.add(10)
+    test_list.add(20)
+    test_list.add(30)
+    test_list.add(40)
+
+    test_list.get(1)
+}
